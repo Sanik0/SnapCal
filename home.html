@@ -582,16 +582,18 @@
         if (!raw) return;
         var data = JSON.parse(raw);
 
-        if (data.name) {
-          document.getElementById("profileName").innerText = data.name;
-        }
-
+        // coming from profile nav - data is logs
         if (data.type === "save_log" && data.logs && data.logs.length > 0) {
           var latest = data.logs[data.logs.length - 1];
           document.getElementById("feedFoodName").innerText = latest.foodName;
           document.getElementById("feedMealTag").innerText = capitalize(latest.meal);
           document.getElementById("feedMeta").innerHTML =
             capitalize(latest.meal) + ' &middot; <span class="feed-kcal">' + latest.calories + ' kcal</span>';
+        }
+
+        // coming from signup/edit - data is user data
+        if (data.name) {
+          document.getElementById("profileName").innerText = data.name;
         }
       } catch (e) { }
     });
