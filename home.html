@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>SnapCal Home</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: #111111;
+      color: #FFFFFF;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      padding-bottom: 80px;
+    }
+
+    /* Top Nav */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px 12px;
+    }
+
+    .topbar .menu-icon {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+    }
+
+    .topbar .menu-icon span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: #FFFFFF;
+      border-radius: 2px;
+    }
+
+    .topbar .logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: #FFFFFF;
+      letter-spacing: 0.5px;
+    }
+
+    .topbar .avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #333;
+      border: 2px solid #AAFF00;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: #AAFF00;
+    }
+
+    /* Ring */
+    .ring-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8px 0 14px;
+    }
+
+    .ring-label {
+      font-size: 10px;
+      color: #666;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .ring-outer {
+      position: relative;
+      width: 150px;
+      height: 150px;
+    }
+
+    .ring-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .ring-kcal {
+      font-size: 30px;
+      font-weight: 800;
+      color: #AAFF00;
+      line-height: 1;
+    }
+
+    .ring-unit {
+      font-size: 10px;
+      color: #666;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-top: 3px;
+    }
+
+    /* Macros */
+    .macros-section {
+      padding: 0 20px 18px;
+    }
+
+    .section-sublabel {
+      font-size: 10px;
+      color: #555;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .macro-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 9px;
+    }
+
+    .macro-name {
+      font-size: 12px;
+      color: #777;
+      width: 48px;
+      flex-shrink: 0;
+    }
+
+    .macro-bar-track {
+      flex: 1;
+      height: 4px;
+      background: #222;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .macro-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: #AAFF00;
+    }
+
+    .macro-val {
+      font-size: 11px;
+      color: #555;
+      width: 66px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    /* Section header */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px 10px;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #FFFFFF;
+    }
+
+    .section-link {
+      font-size: 11px;
+      color: #AAFF00;
+      cursor: pointer;
+    }
+
+    /* Feed */
+    .feed {
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .feed-card-large {
+      background: #1A1A1A;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .feed-img-large {
+      width: 100%;
+      height: 120px;
+      background: #1C2418;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .feed-body-large {
+      padding: 10px 14px 12px;
+    }
+
+    .feed-card-small {
+      background: #1A1A1A;
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+    }
+
+    .feed-img-small {
+      width: 68px;
+      height: 68px;
+      flex-shrink: 0;
+      background: #181E28;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .feed-body-small {
+      padding: 10px 14px;
+      flex: 1;
+    }
+
+    .feed-tag {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      background: #AAFF00;
+      color: #111;
+      padding: 3px 8px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-bottom: 5px;
+    }
+
+    .feed-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #FFF;
+      margin-bottom: 2px;
+    }
+
+    .feed-meta {
+      font-size: 11px;
+      color: #555;
+    }
+
+    .feed-kcal {
+      color: #AAFF00;
+      font-weight: 600;
+    }
+
+    /* Log CTA */
+    .log-cta {
+      margin: 0 20px 16px;
+      background: #1A1A1A;
+      border-radius: 14px;
+      border: 1px dashed #2A2A2A;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+    }
+
+    .log-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #222;
+      border: 1.5px dashed #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .log-icon svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .log-text-strong {
+      font-size: 13px;
+      color: #888;
+      font-weight: 500;
+      margin-bottom: 1px;
+    }
+
+    .log-text-sub {
+      font-size: 11px;
+      color: #444;
+    }
+
+    /* Stats grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 0 20px;
+      margin-bottom: 10px;
+    }
+
+    .stat-card {
+      background: #1A1A1A;
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      color: #555;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .stat-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: #FFF;
+    }
+
+    .stat-value.accent {
+      color: #AAFF00;
+    }
+
+    .stat-sub {
+      font-size: 10px;
+      color: #444;
+      margin-top: 2px;
+    }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #181818;
+      border-top: 1px solid #222;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0 16px;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      flex: 1;
+    }
+
+    .nav-item svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .nav-item span {
+      font-size: 10px;
+      color: #555;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .nav-item.active span {
+      color: #AAFF00;
+    }
+
+    .nav-scan-btn {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: #AAFF00;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: -20px;
+      box-shadow: 0 4px 16px rgba(170, 255, 0, 0.3);
+      cursor: pointer;
+    }
+
+    .nav-scan-btn svg {
+      width: 24px;
+      height: 24px;
+      color: #111;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div class="menu-icon">
+      <span></span><span></span><span></span>
+    </div>
+    <div class="logo">SnapCal</div>
+    <div class="avatar">U</div>
+  </div>
+
+  <!-- Calorie Ring -->
+  <div class="ring-wrap">
+    <div class="ring-label">Today's calories</div>
+    <div class="ring-outer">
+      <svg width="150" height="150" viewBox="0 0 150 150">
+        <circle cx="75" cy="75" r="62" fill="none" stroke="#222" stroke-width="9" />
+        <circle cx="75" cy="75" r="62" fill="none" stroke="#AAFF00" stroke-width="9" stroke-dasharray="390"
+          stroke-dashoffset="97" stroke-linecap="round" transform="rotate(-90 75 75)" />
+      </svg>
+      <div class="ring-center">
+        <div class="ring-kcal" id="totalKcal">1,240</div>
+        <div class="ring-unit">kcal</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Macros -->
+  <div class="macros-section">
+    <div class="section-sublabel">Daily performance</div>
+    <div class="macro-row">
+      <span class="macro-name">Protein</span>
+      <div class="macro-bar-track">
+        <div class="macro-bar-fill" style="width:62%"></div>
+      </div>
+      <span class="macro-val">124g / 180g</span>
+    </div>
+    <div class="macro-row">
+      <span class="macro-name">Carbs</span>
+      <div class="macro-bar-track">
+        <div class="macro-bar-fill" style="width:78%"></div>
+      </div>
+      <span class="macro-val">210g / 270g</span>
+    </div>
+    <div class="macro-row">
+      <span class="macro-name">Fats</span>
+      <div class="macro-bar-track">
+        <div class="macro-bar-fill" style="width:38%"></div>
+      </div>
+      <span class="macro-val">42g / 110g</span>
+    </div>
+  </div>
+
+  <!-- Recent Fueling -->
+  <div class="section-header">
+    <span class="section-title">Recent fueling</span>
+    <span class="section-link" onclick="navTo('logs')">View history</span>
+  </div>
+
+  <div class="feed">
+    <!-- Large card -->
+    <div class="feed-card-large">
+      <div class="feed-img-large">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#2A3A24" stroke-width="1.2">
+          <rect x="3" y="3" width="18" height="18" rx="3" />
+          <circle cx="8.5" cy="8.5" r="1.5" />
+          <path d="M21 15l-5-5L5 21" />
+        </svg>
+      </div>
+      <div class="feed-body-large">
+        <div class="feed-tag">Dinner</div>
+        <div class="feed-name">Wild Atlantic Salmon Bowl</div>
+        <div class="feed-meta">Lunch &middot; <span class="feed-kcal">524 kcal</span></div>
+      </div>
+    </div>
+
+    <!-- Small card -->
+    <div class="feed-card-small">
+      <div class="feed-img-small">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1E2530" stroke-width="1.2">
+          <rect x="3" y="3" width="18" height="18" rx="3" />
+          <circle cx="8.5" cy="8.5" r="1.5" />
+          <path d="M21 15l-5-5L5 21" />
+        </svg>
+      </div>
+      <div class="feed-body-small">
+        <div class="feed-tag">Snack</div>
+        <div class="feed-name">Kinetic Green Pi&ntilde;a</div>
+        <div class="feed-meta">Breakfast &middot; <span class="feed-kcal">312 kcal</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Log Manually CTA -->
+  <div class="log-cta" onclick="navTo('scan')">
+    <div class="log-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2">
+        <circle cx="12" cy="12" r="10" />
+        <path d="M12 8v8M8 12h8" />
+      </svg>
+    </div>
+    <div>
+      <div class="log-text-strong">Log manually</div>
+      <div class="log-text-sub">add previous entry</div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Active kcal</div>
+      <div class="stat-value accent">482</div>
+      <div class="stat-sub">burned today</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Meal streak</div>
+      <div class="stat-value">1.8</div>
+      <div class="stat-sub">avg meals / day</div>
+    </div>
+  </div>
+
+  <div style="height:10px"></div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Steps</div>
+      <div class="stat-value">8.4k</div>
+      <div class="stat-sub">today</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Active time</div>
+      <div class="stat-value">12:15</div>
+      <div class="stat-sub">hh : mm</div>
+    </div>
+  </div>
+
+  <!-- Bottom Nav -->
+  <div class="bottom-nav">
+    <a class="nav-item active" href="file:///android_asset/home.html" style="text-decoration:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#AAFF00" stroke-width="1.8">
+        <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z" />
+        <path d="M9 21V12h6v9" />
+      </svg>
+      <span>Home</span>
+    </a>
+    <a class="nav-item" href="file:///android_asset/logs.html" style="text-decoration:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <polyline points="14 2 14 8 20 8" />
+        <line x1="16" y1="13" x2="8" y2="13" />
+        <line x1="16" y1="17" x2="8" y2="17" />
+        <polyline points="10 9 9 9 8 9" />
+      </svg>
+      <span>Logs</span>
+    </a>
+    <a class="nav-item" href="file:///android_asset/scan.html" style="text-decoration:none;">
+      <div class="nav-scan-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.2">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+          <circle cx="12" cy="13" r="4" />
+        </svg>
+      </div>
+      <span>Scan</span>
+    </a>
+    <a class="nav-item" href="file:///android_asset/statistics.html" style="text-decoration:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8">
+        <rect x="3" y="3" width="7" height="7" rx="1" />
+        <rect x="14" y="3" width="7" height="7" rx="1" />
+        <rect x="14" y="14" width="7" height="7" rx="1" />
+        <rect x="3" y="14" width="7" height="7" rx="1" />
+      </svg>
+      <span>Stats</span>
+    </a>
+    <a class="nav-item" href="file:///android_asset/profile.html" style="text-decoration:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+        <circle cx="12" cy="7" r="4" />
+      </svg>
+      <span>Profile</span>
+    </a>
+  </div>
+
+  <script>
+    
+    function updateData(data) {
+      if (data.totalKcal) document.getElementById('totalKcal').textContent = data.totalKcal.toLocaleString();
+    }
+
+    function navTo(screen) {
+      if (window.AppInventor) {
+        window.AppInventor.setWebViewString('NAV:' + screen.toUpperCase());
+      }
+    }
+
+    window.addEventListener('message', function (e) {
+      try { updateData(JSON.parse(e.data)); } catch (err) { }
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.AppInventorData) {
+        try { updateData(JSON.parse(window.AppInventorData)); } catch (err) { }
+      }
+    });
+  </script>
+</body>
+
+</html>

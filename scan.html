@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>SnapCal Result</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: #111111;
+      color: #FFFFFF;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      padding-bottom: 80px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px 12px;
+    }
+
+    .topbar .menu-icon {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+    }
+
+    .topbar .menu-icon span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: #FFFFFF;
+      border-radius: 2px;
+    }
+
+    .topbar .logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: #FFFFFF;
+      letter-spacing: 0.5px;
+    }
+
+    .topbar .avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #333;
+      border: 2px solid #AAFF00;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: #AAFF00;
+    }
+
+    .food-image-wrap {
+      margin: 0 20px 16px;
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      background: #1E1E1E;
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .food-image-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .food-image-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: #555;
+    }
+
+    .food-image-placeholder .icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #2A2A2A;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .food-image-placeholder .icon svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .ai-badge {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      background: #AAFF00;
+      color: #111;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    /* Loading overlay */
+    .loading-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(17, 17, 17, 0.85);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border-radius: 16px;
+    }
+
+    .loading-overlay.hidden {
+      display: none;
+    }
+
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid #222;
+      border-top-color: #AAFF00;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .loading-text {
+      font-size: 12px;
+      color: #888;
+      letter-spacing: 1px;
+    }
+
+    /* Error banner */
+    .error-banner {
+      margin: 0 20px 12px;
+      background: #2A1414;
+      border: 1px solid #4A2020;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 12px;
+      color: #FF6666;
+      line-height: 1.5;
+    }
+
+    .error-banner.hidden {
+      display: none;
+    }
+
+    .analysis-section {
+      padding: 4px 20px 0;
+    }
+
+    .analysis-label {
+      font-size: 11px;
+      color: #888;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .food-name {
+      font-size: 26px;
+      font-weight: 700;
+      line-height: 1.2;
+      color: #FFFFFF;
+      margin-bottom: 12px;
+    }
+
+    .kcal-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+
+    .kcal-value {
+      font-size: 48px;
+      font-weight: 800;
+      color: #AAFF00;
+      line-height: 1;
+    }
+
+    .kcal-unit {
+      font-size: 18px;
+      font-weight: 600;
+      color: #AAFF00;
+      letter-spacing: 1px;
+    }
+
+    .macro-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .macro-card {
+      background: #1E1E1E;
+      border-radius: 12px;
+      padding: 12px 10px 10px;
+      text-align: center;
+      border: 1px solid #2A2A2A;
+    }
+
+    .macro-label {
+      font-size: 10px;
+      color: #666;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .macro-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-bottom: 6px;
+    }
+
+    .macro-bar-track {
+      height: 3px;
+      background: #2A2A2A;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .macro-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: #AAFF00;
+    }
+
+    .section-label {
+      font-size: 11px;
+      color: #888;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .components-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-bottom: 28px;
+    }
+
+    .component-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 0;
+      border-bottom: 1px solid #1E1E1E;
+    }
+
+    .component-item:last-child {
+      border-bottom: none;
+    }
+
+    .component-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .component-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      border: 2px solid #AAFF00;
+      flex-shrink: 0;
+    }
+
+    .component-name {
+      font-size: 14px;
+      color: #DDDDDD;
+    }
+
+    .component-weight {
+      font-size: 13px;
+      color: #666;
+    }
+
+    .btn-primary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 16px;
+      background: #AAFF00;
+      color: #111111;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      margin-bottom: 12px;
+      font-family: inherit;
+    }
+
+    .btn-primary svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 16px;
+      background: #1E1E1E;
+      color: #AAAAAA;
+      font-size: 15px;
+      font-weight: 600;
+      border: 1px solid #2A2A2A;
+      border-radius: 14px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .btn-secondary svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #181818;
+      border-top: 1px solid #222;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0 16px;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      flex: 1;
+      text-decoration: none;
+    }
+
+    .nav-item svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .nav-item span {
+      font-size: 10px;
+      color: #555;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .nav-item.active span {
+      color: #AAFF00;
+    }
+
+    .nav-scan-btn {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: #AAFF00;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: -20px;
+      box-shadow: 0 4px 16px rgba(170, 255, 0, 0.3);
+      cursor: pointer;
+    }
+
+    .nav-scan-btn svg {
+      width: 24px;
+      height: 24px;
+      color: #111;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="topbar">
+    <div class="menu-icon"><span></span><span></span><span></span></div>
+    <div class="logo">SnapCal</div>
+    <div class="avatar">U</div>
+  </div>
+
+  <div class="food-image-wrap" id="imageWrap">
+    <img id="foodImage" src="" alt="Food" style="display:none;" />
+    <div class="food-image-placeholder" id="imagePlaceholder">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5">
+          <rect x="3" y="3" width="18" height="18" rx="3" />
+          <circle cx="8.5" cy="8.5" r="1.5" />
+          <path d="M21 15l-5-5L5 21" />
+        </svg>
+      </div>
+      <span style="font-size:12px;color:#444;">Waiting for image...</span>
+    </div>
+    <div class="loading-overlay hidden" id="loadingOverlay">
+      <div class="spinner"></div>
+      <div class="loading-text">Analyzing food...</div>
+    </div>
+    <div class="ai-badge" id="aiBadge" style="display:none;">AI Scanned</div>
+  </div>
+
+  <div class="error-banner hidden" id="errorBanner"></div>
+
+  <div class="analysis-section">
+    <div class="analysis-label" id="analysisLabel">Waiting for scan...</div>
+    <div class="food-name" id="foodName">—</div>
+
+    <div class="kcal-row">
+      <span class="kcal-value" id="kcalValue">—</span>
+      <span class="kcal-unit" id="kcalUnit" style="display:none;">KCAL</span>
+    </div>
+
+    <div class="macro-grid">
+      <div class="macro-card">
+        <div class="macro-label">Protein</div>
+        <div class="macro-value" id="protein">—</div>
+        <div class="macro-bar-track">
+          <div class="macro-bar-fill" id="proteinBar" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="macro-card">
+        <div class="macro-label">Carbs</div>
+        <div class="macro-value" id="carbs">—</div>
+        <div class="macro-bar-track">
+          <div class="macro-bar-fill" id="carbsBar" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="macro-card">
+        <div class="macro-label">Fat</div>
+        <div class="macro-value" id="fat">—</div>
+        <div class="macro-bar-track">
+          <div class="macro-bar-fill" id="fatBar" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">Detected Components</div>
+    <div class="components-list" id="componentsList">
+      <div class="component-item">
+        <div class="component-left">
+          <div class="component-dot"></div>
+          <span class="component-name" style="color:#444;">No components detected yet</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="addLogBtn" onclick="addToLog()" disabled>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <circle cx="12" cy="12" r="10" />
+        <path d="M12 8v8M8 12h8" />
+      </svg>
+      Add to Log
+    </button>
+    <button class="btn-secondary" onclick="editDetails()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+      </svg>
+      Edit Details
+    </button>
+  </div>
+
+  <div class="bottom-nav">
+    <a class="nav-item" href="file:///android_asset/home.html" style="text-decoration:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8">
+        <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z" />
+        <path d="M9 21V12h6v9" />
+      </svg>
+      <span>Home</span>
+    </a>
+    <a class="nav-item" href="file:///android_asset/logs.html" style="text-decoration:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <polyline points="14 2 14 8 20 8" />
+        <line x1="16" y1="13" x2="8" y2="13" />
+        <line x1="16" y1="17" x2="8" y2="17" />
+        <polyline points="10 9 9 9 8 9" />
+      </svg>
+      <span>Logs</span>
+    </a>
+    <a class="nav-item active" onclick="takePhoto()" style="cursor:pointer;">
+      <div class="nav-scan-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.2">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+          <circle cx="12" cy="13" r="4" />
+        </svg>
+      </div>
+      <span>Scan</span>
+    </a>
+    <a class="nav-item" href="file:///android_asset/stats.html" style="text-decoration:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8">
+        <rect x="3" y="3" width="7" height="7" rx="1" />
+        <rect x="14" y="3" width="7" height="7" rx="1" />
+        <rect x="14" y="14" width="7" height="7" rx="1" />
+        <rect x="3" y="14" width="7" height="7" rx="1" />
+      </svg>
+      <span>Stats</span>
+    </a>
+    <a class="nav-item" href="file:///android_asset/profile.html" style="text-decoration:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+        <circle cx="12" cy="7" r="4" />
+      </svg>
+      <span>Profile</span>
+    </a>
+  </div>
+
+  <script>
+    // ─── PASTE YOUR GEMINI API KEY HERE ───────────────────────────────────────
+    var GEMINI_API_KEY = 'AIzaSyAaeD9y2WY5Ip6V4KNgo3t9yAM-6aVYOzw';
+    // ─────────────────────────────────────────────────────────────────────────
+
+    var currentResult = null;
+    var currentImageBase64 = null;
+
+    function takePhoto() {
+      if (window.AppInventor) {
+        window.AppInventor.setWebViewString('ACTION:TAKE_PHOTO');
+      }
+    }
+
+    // ── Called after image is ready (base64 string) ───────────────────────────
+    function handleImage(base64Data) {
+      currentImageBase64 = base64Data;
+
+      var img = document.getElementById('foodImage');
+      img.src = 'data:image/jpeg;base64,' + base64Data;
+      img.style.display = 'block';
+      document.getElementById('imagePlaceholder').style.display = 'none';
+
+      document.getElementById('loadingOverlay').classList.remove('hidden');
+      document.getElementById('errorBanner').classList.add('hidden');
+      document.getElementById('aiBadge').style.display = 'none';
+      document.getElementById('addLogBtn').disabled = true;
+
+      analyzeWithGemini(base64Data);
+    }
+
+    // ── Convert local file path to base64 ────────────────────────────────────
+    function convertImagePathToBase64(filePath) {
+      document.getElementById('loadingOverlay').classList.remove('hidden');
+
+      fetch(filePath)
+        .then(function (res) { return res.blob(); })
+        .then(function (blob) {
+          var reader = new FileReader();
+          reader.onloadend = function () {
+            var base64 = reader.result.split(',')[1];
+            handleImage(base64);
+          };
+          reader.readAsDataURL(blob);
+        })
+        .catch(function (err) {
+          showError('Could not read image file: ' + err.message);
+        });
+    }
+
+    // ── Gemini API call ───────────────────────────────────────────────────────
+    function analyzeWithGemini(base64Data) {
+      var prompt = 'Analyze this food image and respond ONLY with a JSON object in this exact format, no extra text:\n' +
+        '{\n' +
+        '  "foodName": "Name of the food or dish",\n' +
+        '  "kcal": 450,\n' +
+        '  "protein": 25,\n' +
+        '  "carbs": 55,\n' +
+        '  "fat": 12,\n' +
+        '  "components": [\n' +
+        '    { "name": "Ingredient name", "amount": "estimated amount e.g. 150g or 2 tbsp" }\n' +
+        '  ]\n' +
+        '}\n' +
+        'All numeric values should be integers. Components should list the visible ingredients. If you cannot identify food in the image, set foodName to "Unknown Food" and estimate 0 for all values.';
+
+      fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + GEMINI_API_KEY, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            parts: [
+              { text: prompt },
+              { inline_data: { mime_type: 'image/jpeg', data: base64Data } }
+            ]
+          }],
+          generationConfig: { temperature: 0.1, maxOutputTokens: 512 }
+        })
+      })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          if (data.error) { showError('API Error: ' + data.error.message); return; }
+          var text = data.candidates[0].content.parts[0].text;
+          text = text.replace(/```json|```/g, '').trim();
+          var result = JSON.parse(text);
+          renderResult(result);
+        })
+        .catch(function (err) {
+          showError('Failed to analyze image. Check your internet connection and API key. (' + err.message + ')');
+        });
+    }
+
+    // ── Render result into the UI ─────────────────────────────────────────────
+    function renderResult(data) {
+      currentResult = data;
+
+      document.getElementById('loadingOverlay').classList.add('hidden');
+      document.getElementById('aiBadge').style.display = 'block';
+      document.getElementById('analysisLabel').textContent = 'Analysis Complete';
+      document.getElementById('addLogBtn').disabled = false;
+
+      document.getElementById('foodName').textContent = data.foodName || 'Unknown Food';
+      document.getElementById('kcalValue').textContent = data.kcal || 0;
+      document.getElementById('kcalUnit').style.display = 'inline';
+      document.getElementById('protein').textContent = (data.protein || 0) + 'g';
+      document.getElementById('carbs').textContent = (data.carbs || 0) + 'g';
+      document.getElementById('fat').textContent = (data.fat || 0) + 'g';
+
+      var total = (data.protein || 0) + (data.carbs || 0) + (data.fat || 0);
+      if (total > 0) {
+        document.getElementById('proteinBar').style.width = Math.round((data.protein / total) * 100) + '%';
+        document.getElementById('carbsBar').style.width = Math.round((data.carbs / total) * 100) + '%';
+        document.getElementById('fatBar').style.width = Math.round((data.fat / total) * 100) + '%';
+      }
+
+      var list = document.getElementById('componentsList');
+      list.innerHTML = '';
+      if (data.components && data.components.length > 0) {
+        data.components.forEach(function (c) {
+          list.innerHTML +=
+            '<div class="component-item">' +
+            '<div class="component-left">' +
+            '<div class="component-dot"></div>' +
+            '<span class="component-name">' + c.name + '</span>' +
+            '</div>' +
+            '<span class="component-weight">' + c.amount + '</span>' +
+            '</div>';
+        });
+      } else {
+        list.innerHTML = '<div class="component-item"><div class="component-left"><div class="component-dot"></div><span class="component-name" style="color:#444;">No components detected</span></div></div>';
+      }
+
+      if (window.AppInventor) {
+        window.AppInventor.setWebViewString('RESULT:' + JSON.stringify({
+          foodName: data.foodName,
+          kcal: data.kcal,
+          protein: data.protein,
+          carbs: data.carbs,
+          fat: data.fat,
+          components: data.components,
+          timestamp: new Date().toISOString()
+        }));
+      }
+    }
+
+    // ── Error display ─────────────────────────────────────────────────────────
+    function showError(msg) {
+      document.getElementById('loadingOverlay').classList.add('hidden');
+      var banner = document.getElementById('errorBanner');
+      banner.textContent = '⚠ ' + msg;
+      banner.classList.remove('hidden');
+      document.getElementById('analysisLabel').textContent = 'Analysis failed';
+    }
+
+    // ── App Inventor bridge (ONE unified handler) ─────────────────────────────
+    function onAppInventorMessage(str) {
+      if (!str) return;
+      if (str.startsWith('base64:')) {
+        handleImage(str.substring(7));
+      } else if (str.startsWith('imagepath:')) {
+        convertImagePathToBase64(str.substring(10));
+      }
+    }
+
+    window.AppInventorStringReceived = onAppInventorMessage;
+
+    // postMessage listener
+    window.addEventListener('message', function (e) {
+      try {
+        var data = JSON.parse(e.data);
+        if (data.imageBase64) handleImage(data.imageBase64);
+      } catch (err) {
+        if (typeof e.data === 'string') onAppInventorMessage(e.data);
+      }
+    });
+
+    // Polling fallback (ONE copy only)
+    var lastWebViewString = '';
+    setInterval(function () {
+      if (window.AppInventor) {
+        var str = window.AppInventor.getWebViewString();
+        if (str && str !== lastWebViewString) {
+          lastWebViewString = str;
+          onAppInventorMessage(str);
+        }
+      }
+    }, 500);
+
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.AppInventorData) {
+        try {
+          var data = JSON.parse(window.AppInventorData);
+          if (data.imageBase64) handleImage(data.imageBase64);
+        } catch (err) { }
+      }
+    });
+
+    // ── Button actions ────────────────────────────────────────────────────────
+    function addToLog() {
+      if (window.AppInventor && currentResult) {
+        window.AppInventor.setWebViewString('ACTION:ADD_TO_LOG:' + JSON.stringify(currentResult));
+      }
+    }
+
+    function editDetails() {
+      if (window.AppInventor) {
+        window.AppInventor.setWebViewString('ACTION:EDIT_DETAILS');
+      }
+    }
+  </script>
+</body>
+
+</html>

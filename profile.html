@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>SnapCal Profile</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: #111111;
+      color: #FFFFFF;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      padding-bottom: 80px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px 12px;
+    }
+
+    .topbar .menu-icon {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+    }
+
+    .topbar .menu-icon span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: #FFFFFF;
+      border-radius: 2px;
+    }
+
+    .topbar .logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: #FFFFFF;
+      letter-spacing: 0.5px;
+    }
+
+    .topbar .edit-btn {
+      font-size: 12px;
+      font-weight: 600;
+      color: #AAFF00;
+      background: none;
+      border: 1px solid #AAFF00;
+      border-radius: 20px;
+      padding: 6px 14px;
+      cursor: pointer;
+      font-family: inherit;
+      letter-spacing: 0.3px;
+    }
+
+    /* Avatar section */
+    .profile-hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px 20px 24px;
+    }
+
+    .avatar-wrap {
+      position: relative;
+      margin-bottom: 14px;
+    }
+
+    .avatar-circle {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: #1A1A1A;
+      border: 3px solid #AAFF00;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 700;
+      color: #AAFF00;
+    }
+
+    .avatar-badge {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #AAFF00;
+      border: 2px solid #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .avatar-badge svg {
+      width: 11px;
+      height: 11px;
+    }
+
+    .profile-name {
+      font-size: 22px;
+      font-weight: 700;
+      color: #FFF;
+      margin-bottom: 4px;
+    }
+
+    .profile-email {
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 16px;
+    }
+
+    .profile-badges {
+      display: flex;
+      gap: 8px;
+    }
+
+    .badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    .badge-green {
+      background: #1A2A14;
+      color: #AAFF00;
+    }
+
+    .badge-gray {
+      background: #1A1A1A;
+      color: #555;
+      border: 1px solid #222;
+    }
+
+    /* Quick stats */
+    .quick-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1px;
+      background: #222;
+      border-radius: 14px;
+      margin: 0 20px 20px;
+      overflow: hidden;
+    }
+
+    .quick-stat {
+      background: #1A1A1A;
+      padding: 14px 10px;
+      text-align: center;
+    }
+
+    .quick-stat-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: #AAFF00;
+      margin-bottom: 3px;
+    }
+
+    .quick-stat-label {
+      font-size: 10px;
+      color: #555;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    /* Section label */
+    .section-label {
+      font-size: 11px;
+      color: #555;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      padding: 0 20px;
+      margin-bottom: 10px;
+    }
+
+    /* Goals card */
+    .goals-wrap {
+      padding: 0 20px;
+      margin-bottom: 20px;
+    }
+
+    .goals-card {
+      background: #1A1A1A;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .goal-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid #222;
+    }
+
+    .goal-row:last-child {
+      border-bottom: none;
+    }
+
+    .goal-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .goal-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: #222;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .goal-icon svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .goal-name {
+      font-size: 13px;
+      color: #CCC;
+      margin-bottom: 2px;
+    }
+
+    .goal-sub {
+      font-size: 11px;
+      color: #444;
+    }
+
+    .goal-value {
+      font-size: 14px;
+      font-weight: 700;
+      color: #FFF;
+    }
+
+    .goal-value.accent {
+      color: #AAFF00;
+    }
+
+    /* Body info */
+    .body-wrap {
+      padding: 0 20px;
+      margin-bottom: 20px;
+    }
+
+    .body-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .body-card {
+      background: #1A1A1A;
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .body-label {
+      font-size: 10px;
+      color: #555;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    .body-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: #FFF;
+    }
+
+    .body-unit {
+      font-size: 11px;
+      color: #444;
+      margin-top: 2px;
+    }
+
+    /* Settings list */
+    .settings-wrap {
+      padding: 0 20px;
+      margin-bottom: 20px;
+    }
+
+    .settings-card {
+      background: #1A1A1A;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .settings-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid #222;
+      cursor: pointer;
+    }
+
+    .settings-row:last-child {
+      border-bottom: none;
+    }
+
+    .settings-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .settings-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: #222;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .settings-icon svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    .settings-name {
+      font-size: 13px;
+      color: #CCC;
+    }
+
+    .settings-arrow {
+      color: #333;
+    }
+
+    .settings-arrow svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .settings-toggle {
+      width: 38px;
+      height: 22px;
+      border-radius: 11px;
+      background: #AAFF00;
+      position: relative;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .settings-toggle-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #111;
+      position: absolute;
+      top: 3px;
+      right: 3px;
+    }
+
+    .settings-toggle.off {
+      background: #2A2A2A;
+    }
+
+    .settings-toggle.off .settings-toggle-dot {
+      right: auto;
+      left: 3px;
+    }
+
+    /* Sign out */
+    .signout-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: calc(100% - 40px);
+      margin: 0 20px 20px;
+      padding: 15px;
+      background: #1A1A1A;
+      color: #FF4444;
+      font-size: 14px;
+      font-weight: 600;
+      border: 1px solid #2A1A1A;
+      border-radius: 14px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .signout-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #181818;
+      border-top: 1px solid #222;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0 16px;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      flex: 1;
+      text-decoration: none;
+    }
+
+    .nav-item svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .nav-item span {
+      font-size: 10px;
+      color: #555;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .nav-item.active span {
+      color: #AAFF00;
+    }
+
+    .nav-scan-btn {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: #AAFF00;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: -20px;
+      box-shadow: 0 4px 16px rgba(170, 255, 0, 0.3);
+      cursor: pointer;
+    }
+
+    .nav-scan-btn svg {
+      width: 24px;
+      height: 24px;
+      color: #111;
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 999;
+      justify-content: flex-end;
+      flex-direction: column;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-sheet {
+      background: #1a1a1a;
+      border-radius: 24px 24px 0 0;
+      padding: 20px 20px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      animation: slideUp 0.25s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(100%);
+      }
+
+      to {
+        transform: translateY(0);
+      }
+    }
+
+    .modal-handle {
+      width: 40px;
+      height: 4px;
+      background: #333;
+      border-radius: 2px;
+      margin: 0 auto 6px;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .modal-label {
+      font-size: 10px;
+      color: #555;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .modal-input {
+      width: 100%;
+      background: #111;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 13px 14px;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+      box-sizing: border-box;
+    }
+
+    .modal-input:focus {
+      border-color: #AAFF00;
+    }
+
+    .modal-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .modal-option-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .modal-option {
+      background: #111;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 11px 14px;
+      color: #888;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .modal-option.selected {
+      border-color: #AAFF00;
+      background: #1C2210;
+      color: #AAFF00;
+    }
+
+    .modal-gender-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .modal-save-btn {
+      width: 100%;
+      background: #AAFF00;
+      color: #111;
+      font-size: 15px;
+      font-weight: 800;
+      border: none;
+      border-radius: 14px;
+      padding: 16px;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+
+    .modal-cancel {
+      text-align: center;
+      font-size: 13px;
+      color: #555;
+      cursor: pointer;
+      padding: 4px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="topbar">
+    <div class="menu-icon"><span></span><span></span><span></span></div>
+    <div class="logo">SnapCal</div>
+    <button class="edit-btn" onclick="document.getElementById('editModal').classList.add('active')">Edit</button>
+  </div>
+
+  <!-- Profile Hero -->
+  <div class="profile-hero">
+    <div class="avatar-wrap">
+      <div class="avatar-circle">U</div>
+      <div class="avatar-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.5">
+          <path d="M12 20h9" />
+          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+        </svg>
+      </div>
+    </div>
+    <div class="profile-name" id="profileName">User</div>
+    <div class="profile-email" id="profileEmail">user@email.com</div>
+    <div class="profile-badges">
+      <span class="badge badge-green">12 Day Streak</span>
+      <span class="badge badge-gray">Member since Oct 2024</span>
+    </div>
+  </div>
+
+  <!-- Quick Stats -->
+  <div class="quick-stats">
+    <div class="quick-stat">
+      <div class="quick-stat-value">68</div>
+      <div class="quick-stat-label">Meals</div>
+    </div>
+    <div class="quick-stat">
+      <div class="quick-stat-value">12</div>
+      <div class="quick-stat-label">Streak</div>
+    </div>
+    <div class="quick-stat">
+      <div class="quick-stat-value">18</div>
+      <div class="quick-stat-label">Goals hit</div>
+    </div>
+  </div>
+
+  <!-- Daily Goals -->
+  <div class="section-label">Daily goals</div>
+  <div class="goals-wrap">
+    <div class="goals-card">
+      <div class="goal-row">
+        <div class="goal-left">
+          <div class="goal-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#AAFF00" stroke-width="2">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+            </svg>
+          </div>
+          <div>
+            <div class="goal-name">Calorie target</div>
+            <div class="goal-sub">Daily limit</div>
+          </div>
+        </div>
+        <div class="goal-value accent">2,000 kcal</div>
+      </div>
+      <div class="goal-row">
+        <div class="goal-left">
+          <div class="goal-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2">
+              <path
+                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            </svg>
+          </div>
+          <div>
+            <div class="goal-name">Protein goal</div>
+            <div class="goal-sub">Per day</div>
+          </div>
+        </div>
+        <div class="goal-value">180g</div>
+      </div>
+      <div class="goal-row">
+        <div class="goal-left">
+          <div class="goal-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+            </svg>
+          </div>
+          <div>
+            <div class="goal-name">Activity level</div>
+            <div class="goal-sub">Current setting</div>
+          </div>
+        </div>
+        <div class="goal-value">Moderate</div>
+      </div>
+      <div class="goal-row">
+        <div class="goal-left">
+          <div class="goal-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 6v6l4 2" />
+            </svg>
+          </div>
+          <div>
+            <div class="goal-name">Goal type</div>
+            <div class="goal-sub">Objective</div>
+          </div>
+        </div>
+        <div class="goal-value">Maintain</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Body Info -->
+  <div class="section-label">Body info</div>
+  <div class="body-wrap">
+    <div class="body-grid">
+      <div class="body-card">
+        <div class="body-label">Age</div>
+        <div class="body-value" id="bodyAge">24</div>
+        <div class="body-unit">years old</div>
+      </div>
+      <div class="body-card">
+        <div class="body-label">Gender</div>
+        <div class="body-value" id="bodyGender">Male</div>
+        <div class="body-unit">&nbsp;</div>
+      </div>
+      <div class="body-card">
+        <div class="body-label">Weight</div>
+        <div class="body-value" id="bodyWeight">72</div>
+        <div class="body-unit">kg</div>
+      </div>
+      <div class="body-card">
+        <div class="body-label">Height</div>
+        <div class="body-value" id="bodyHeight">175</div>
+        <div class="body-unit">cm</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings -->
+  <div class="section-label">Preferences</div>
+  <div class="settings-wrap">
+    <div class="settings-card">
+      <div class="settings-row">
+        <div class="settings-left">
+          <div class="settings-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2">
+              <path d="M18 8h1a4 4 0 0 1 0 8h-1" />
+              <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" />
+              <line x1="6" y1="1" x2="6" y2="4" />
+              <line x1="10" y1="1" x2="10" y2="4" />
+              <line x1="14" y1="1" x2="14" y2="4" />
+            </svg>
+          </div>
+          <span class="settings-name">Units</span>
+        </div>
+        <div class="settings-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2">
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </div>
+      </div>
+      <div class="settings-row">
+        <div class="settings-left">
+          <div class="settings-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2">
+              <path d="M18 20V10" />
+              <path d="M12 20V4" />
+              <path d="M6 20v-6" />
+            </svg>
+          </div>
+          <span class="settings-name">Notifications</span>
+        </div>
+        <div class="settings-toggle" id="notifToggle" onclick="toggleSwitch(this)">
+          <div class="settings-toggle-dot"></div>
+        </div>
+      </div>
+      <div class="settings-row">
+        <div class="settings-left">
+          <div class="settings-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14" />
+            </svg>
+          </div>
+          <span class="settings-name">Meal reminders</span>
+        </div>
+        <div class="settings-toggle off" id="reminderToggle" onclick="toggleSwitch(this)">
+          <div class="settings-toggle-dot"></div>
+        </div>
+      </div>
+      <div class="settings-row">
+        <div class="settings-left">
+          <div class="settings-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+          </div>
+          <span class="settings-name">Privacy & data</span>
+        </div>
+        <div class="settings-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2">
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </div>
+      </div>
+      <div class="settings-row">
+        <div class="settings-left">
+          <div class="settings-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 8v4M12 16h.01" />
+            </svg>
+          </div>
+          <span class="settings-name">About SnapCal</span>
+        </div>
+        <div class="settings-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2">
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sign Out -->
+  <button class="signout-btn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#FF4444" stroke-width="2">
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+      <polyline points="16 17 21 12 16 7" />
+      <line x1="21" y1="12" x2="9" y2="12" />
+    </svg>
+    Sign out
+  </button>
+
+  <!-- Bottom Nav -->
+  <div class="bottom-nav">
+    <a class="nav-item" href="file:///android_asset/home.html" style="text-decoration:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8">
+        <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z" />
+        <path d="M9 21V12h6v9" />
+      </svg>
+      <span>Home</span>
+    </a>
+    <a class="nav-item" href="file:///android_asset/logs.html" style="text-decoration:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <polyline points="14 2 14 8 20 8" />
+        <line x1="16" y1="13" x2="8" y2="13" />
+        <line x1="16" y1="17" x2="8" y2="17" />
+        <polyline points="10 9 9 9 8 9" />
+      </svg>
+      <span>Logs</span>
+    </a>
+    <a class="nav-item" href="file:///android_asset/scan.html" style="text-decoration:none;">
+      <div class="nav-scan-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.2">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+          <circle cx="12" cy="13" r="4" />
+        </svg>
+      </div>
+      <span>Scan</span>
+    </a>
+    <a class="nav-item" href="file:///android_asset/statistics.html" style="text-decoration:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8">
+        <rect x="3" y="3" width="7" height="7" rx="1" />
+        <rect x="14" y="3" width="7" height="7" rx="1" />
+        <rect x="14" y="14" width="7" height="7" rx="1" />
+        <rect x="3" y="14" width="7" height="7" rx="1" />
+      </svg>
+      <span>Stats</span>
+    </a>
+    <a class="nav-item active" href="file:///android_asset/profile.html" style="text-decoration:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#AAFF00" stroke-width="1.8">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+        <circle cx="12" cy="7" r="4" />
+      </svg>
+      <span>Profile</span>
+    </a>
+  </div>
+
+  <div class="modal-overlay" id="editModal">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">Edit Profile</div>
+
+      <!-- Name -->
+      <div>
+        <label class="modal-label">Full name</label>
+        <input id="edit-name" class="modal-input" type="text" placeholder="Your name">
+      </div>
+      <!-- Age -->
+      <div>
+        <label class="modal-label">Age</label>
+        <input id="edit-age" class="modal-input" type="number" placeholder="Your age">
+      </div>
+
+      <!-- Gender -->
+      <div>
+        <label class="modal-label">Gender</label>
+        <div class="modal-gender-group">
+          <div class="modal-option" id="gopt-male" onclick="selectEditOption('gender','male')">♂ Male</div>
+          <div class="modal-option" id="gopt-female" onclick="selectEditOption('gender','female')">♀ Female</div>
+        </div>
+      </div>
+
+      <!-- Weight & Height -->
+      <div class="modal-grid">
+        <div>
+          <label class="modal-label">Weight (kg)</label>
+          <input id="edit-weight" class="modal-input" type="number" placeholder="70">
+        </div>
+        <div>
+          <label class="modal-label">Height (cm)</label>
+          <input id="edit-height" class="modal-input" type="number" placeholder="170">
+        </div>
+      </div>
+
+      <!-- Goal -->
+      <div>
+        <label class="modal-label">Goal</label>
+        <div class="modal-option-group">
+          <div class="modal-option" id="gopt-gain" onclick="selectEditOption('goal','gain')">Gain weight</div>
+          <div class="modal-option" id="gopt-maintain" onclick="selectEditOption('goal','maintain')">Maintain weight
+          </div>
+          <div class="modal-option" id="gopt-lose" onclick="selectEditOption('goal','lose')">Lose weight</div>
+        </div>
+      </div>
+
+      <button class="modal-save-btn" onclick="saveEdits()">Save Changes</button>
+      <div class="modal-cancel" onclick="closeModal()">Cancel</div>
+    </div>
+  </div>
+
+
+  <script>
+
+    window.addEventListener("load", function () {
+      try {
+        var raw = window.AppInventor.getWebViewString();
+        if (raw) {
+          var data = JSON.parse(raw);
+          document.getElementById("profileName").innerText = data.name;
+          document.getElementById("bodyAge").innerText = data.age;
+          document.getElementById("bodyGender").innerText = data.gender;
+          document.getElementById("bodyWeight").innerText = data.weight;
+          document.getElementById("bodyHeight").innerText = data.height;
+        }
+      } catch (e) {
+        console.log("Error: " + e);
+      }
+    });
+
+    function toggleSwitch(el) {
+      el.classList.toggle('off');
+    }
+
+    var editGender = "";
+    var editGoal = "";
+
+    // Open modal and pre-fill with current data
+    document.querySelector(".edit-btn").addEventListener("click", function () {
+      try {
+        var raw = window.AppInventor.getWebViewString();
+        if (raw) {
+          var data = JSON.parse(raw);
+          document.getElementById("edit-name").value = data.name || "";
+          document.getElementById("edit-weight").value = data.weight || "";
+          document.getElementById("edit-height").value = data.height || "";
+          document.getElementById("edit-age").value = data.age || "";
+          if (data.gender) selectEditOption("gender", data.gender);
+          if (data.goal) selectEditOption("goal", data.goal);
+        }
+      } catch (e) { }
+      document.getElementById("editModal").classList.add("active");
+    });
+
+    function closeModal() {
+      document.getElementById("editModal").classList.remove("active");
+    }
+
+    // Close modal when tapping the dark overlay behind the sheet
+    document.getElementById("editModal").addEventListener("click", function (e) {
+      if (e.target === this) closeModal();
+    });
+
+    function selectEditOption(type, val) {
+      if (type === "gender") {
+        editGender = val;
+        document.getElementById("gopt-male").classList.toggle("selected", val === "male");
+        document.getElementById("gopt-female").classList.toggle("selected", val === "female");
+      } else {
+        editGoal = val;
+        ["gain", "maintain", "lose"].forEach(function (g) {
+          document.getElementById("gopt-" + g).classList.toggle("selected", g === val);
+        });
+      }
+    }
+
+    function saveEdits() {
+      var name = document.getElementById("edit-name").value.trim();
+      var age = document.getElementById("edit-age").value.trim();
+      var weight = document.getElementById("edit-weight").value.trim();
+      var height = document.getElementById("edit-height").value.trim();
+
+      if (!name) { alert("Please enter your name."); return; }
+      if (!age) { alert("Please enter your age."); return; }
+      if (!editGender) { alert("Please select your gender."); return; }
+      if (!weight) { alert("Please enter your weight."); return; }
+      if (!height) { alert("Please enter your height."); return; }
+      if (!editGoal) { alert("Please select your goal."); return; }
+
+      var data = JSON.stringify({
+        name: name,
+        gender: editGender,
+        weight: weight,
+        height: height,
+        age: age,
+        goal: editGoal
+      });
+
+      window.AppInventor.setWebViewString(data);
+      closeModal();
+    }
+
+    window.addEventListener('message', function (e) {
+      try { updateData(JSON.parse(e.data)); } catch (err) { }
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.AppInventorData) {
+        try { updateData(JSON.parse(window.AppInventorData)); } catch (err) { }
+      }
+    });
+  </script>
+</body>
+
+</html>
