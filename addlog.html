@@ -445,9 +445,22 @@
             try {
                 var raw = window.AppInventor.getWebViewString();
                 if (raw) {
-                    var parsed = JSON.parse(raw);
-                    if (parsed.type === "all_logs") {
-                        existingLogs = parsed.logs;
+                    var separatorIndex = raw.indexOf("|");
+                    if (separatorIndex !== -1) {
+                        // combined string from home - get the logs part
+                        var logsRaw = raw.substring(separatorIndex + 1);
+                        if (logsRaw) {
+                            var parsed = JSON.parse(logsRaw);
+                            if (parsed && parsed.logs) {
+                                existingLogs = parsed.logs;
+                            }
+                        }
+                    } else {
+                        // direct logs string
+                        var parsed = JSON.parse(raw);
+                        if (parsed && parsed.logs) {
+                            existingLogs = parsed.logs;
+                        }
                     }
                 }
             } catch (e) { }
