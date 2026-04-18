@@ -571,21 +571,19 @@
       try {
         var raw = window.AppInventor.getWebViewString();
         if (raw) {
-          // check if it's log data
           var data = JSON.parse(raw);
 
+          // load profile data
+          if (data.name) {
+            // your existing profile fields
+          }
+
+          // load log data
           if (data.type === "save_log") {
-            // update food name
             document.getElementById("feedFoodName").innerText = data.foodName;
-
-            // update meal tag
             document.getElementById("feedMealTag").innerText = capitalize(data.meal);
-
-            // update meta
             document.getElementById("feedMeta").innerHTML =
               capitalize(data.meal) + ' &middot; <span class="feed-kcal">' + data.calories + ' kcal</span>';
-
-            // update image if exists
             if (data.image) {
               document.getElementById("feedImgLarge").innerHTML =
                 '<img src="' + data.image + '" style="width:100%;height:120px;object-fit:cover;">';

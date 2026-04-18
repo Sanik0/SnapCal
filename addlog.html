@@ -435,6 +435,7 @@
             var carbs = document.getElementById("carbs").value.trim();
             var fat = document.getElementById("fat").value.trim();
             var notes = document.getElementById("notes").value.trim();
+            var logKey = "log_" + new Date().getTime();
 
             if (!foodName) { alert("Please enter a food name."); return; }
             if (!calories) { alert("Please enter calories."); return; }
@@ -442,6 +443,7 @@
 
             var log = JSON.stringify({
                 type: "save_log",
+                key: logKey,
                 foodName: foodName,
                 servingSize: servingSize || "0",
                 calories: calories,
