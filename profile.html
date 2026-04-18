@@ -923,24 +923,12 @@
 
 
   <script>
-
     window.addEventListener("load", function () {
       try {
         var raw = window.AppInventor.getWebViewString();
-        if (raw) {
-          var data = JSON.parse(raw);
-          document.getElementById("profileName").innerText = data.name;
-          document.getElementById("bodyAge").innerText = data.age;
-          document.getElementById("bodyGender").innerText = data.gender;
-          document.getElementById("bodyWeight").innerText = data.weight;
-          document.getElementById("bodyHeight").innerText = data.height;
-        }
-        calculateGoals(data);
-      } catch (e) {
-        console.log("Error: " + e);
-      }
+        alert("PROFILE RAW: " + raw.substring(0, 150));
+      } catch (e) { alert("ERR: " + e.message); }
     });
-
     function toggleSwitch(el) {
       el.classList.toggle('off');
     }
