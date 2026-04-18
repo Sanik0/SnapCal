@@ -435,15 +435,25 @@
             var carbs = document.getElementById("carbs").value.trim();
             var fat = document.getElementById("fat").value.trim();
             var notes = document.getElementById("notes").value.trim();
-            var logKey = "log_" + new Date().getTime();
 
             if (!foodName) { alert("Please enter a food name."); return; }
             if (!calories) { alert("Please enter calories."); return; }
             if (!selectedMeal) { alert("Please select a meal type."); return; }
 
-            var log = JSON.stringify({
-                type: "save_log",
-                key: logKey,
+            // get existing logs
+            var existingLogs = [];
+            try {
+                var raw = window.AppInventor.getWebViewString();
+                if (raw) {
+                    var parsed = JSON.parse(raw);
+                    if (parsed.type === "all_logs") {
+                        existingLogs = parsed.logs;
+                    }
+                }
+            } catch (e) { }
+
+            // add new log to array
+            existingLogs.push({
                 foodName: foodName,
                 servingSize: servingSize || "0",
                 calories: calories,
@@ -457,7 +467,13 @@
                 time: new Date().toLocaleTimeString()
             });
 
-            window.AppInventor.setWebViewString(log);
+            // save entire array
+            var data = JSON.stringify({
+                type: "save_log",
+                logs: existingLogs
+            });
+
+            window.AppInventor.setWebViewString(data);
         }
     </script>
 

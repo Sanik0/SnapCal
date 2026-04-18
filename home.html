@@ -568,30 +568,42 @@
   <script>
 
     window.addEventListener("load", function () {
+      // request data from App Inventor
+      window.AppInventor.setWebViewString("GET_DATA");
+    });
+
+    // listen for response
+    var dataInterval = setInterval(function () {
       try {
         var raw = window.AppInventor.getWebViewString();
-        if (raw) {
-          var data = JSON.parse(raw);
+        console.log("RAW:", raw); // add this
+        if (raw && raw !== "GET_DATA") {
+          clearInterval(dataInterval);
+          var separatorIndex = raw.indexOf("|");
+          var userData = JSON.parse(raw.substring(0, separatorIndex));
+          var logsRaw = raw.substring(separatorIndex + 1);
+          var logsData = logsRaw ? JSON.parse(logsRaw) : null;
 
-          // load profile data
-          if (data.name) {
-            // your existing profile fields
+          // load user info
+          if (userData.name) {
+            document.getElementById("profileName").innerText = userData.name;
           }
 
-          // load log data
-          if (data.type === "save_log") {
-            document.getElementById("feedFoodName").innerText = data.foodName;
-            document.getElementById("feedMealTag").innerText = capitalize(data.meal);
+          // load latest log into card
+          if (logsData && logsData.logs && logsData.logs.length > 0) {
+            var latest = logsData.logs[logsData.logs.length - 1];
+            document.getElementById("feedFoodName").innerText = latest.foodName;
+            document.getElementById("feedMealTag").innerText = capitalize(latest.meal);
             document.getElementById("feedMeta").innerHTML =
-              capitalize(data.meal) + ' &middot; <span class="feed-kcal">' + data.calories + ' kcal</span>';
-            if (data.image) {
+              capitalize(latest.meal) + ' &middot; <span class="feed-kcal">' + latest.calories + ' kcal</span>';
+            if (latest.image) {
               document.getElementById("feedImgLarge").innerHTML =
-                '<img src="' + data.image + '" style="width:100%;height:120px;object-fit:cover;">';
+                '<img src="' + latest.image + '" style="width:100%;height:120px;object-fit:cover;">';
             }
           }
         }
       } catch (e) { }
-    });
+    }, 300);
 
     function capitalize(str) {
       return str.charAt(0).toUpperCase() + str.slice(1);
