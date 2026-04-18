@@ -923,12 +923,21 @@
 
 
   <script>
+
     window.addEventListener("load", function () {
       try {
         var raw = window.AppInventor.getWebViewString();
-        alert("PROFILE RAW: " + raw.substring(0, 150));
-      } catch (e) { alert("ERR: " + e.message); }
+        if (!raw) return;
+
+        var data = JSON.parse(raw);
+
+        document.getElementById("profileName").innerText = data.name || "User";
+        document.getElementById("bodyGender").innerText = data.gender || "--";
+        document.getElementById("bodyWeight").innerText = data.weight || "--";
+        document.getElementById("bodyHeight").innerText = data.height || "--";
+      } catch (e) { }
     });
+
     function toggleSwitch(el) {
       el.classList.toggle('off');
     }
