@@ -460,9 +460,8 @@
   </div>
 
   <div class="feed">
-    <!-- Large card -->
     <div class="feed-card-large">
-      <div class="feed-img-large">
+      <div class="feed-img-large" id="feedImgLarge">
         <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#2A3A24" stroke-width="1.2">
           <rect x="3" y="3" width="18" height="18" rx="3" />
           <circle cx="8.5" cy="8.5" r="1.5" />
@@ -470,31 +469,15 @@
         </svg>
       </div>
       <div class="feed-body-large">
-        <div class="feed-tag">Dinner</div>
-        <div class="feed-name">Wild Atlantic Salmon Bowl</div>
-        <div class="feed-meta">Lunch &middot; <span class="feed-kcal">524 kcal</span></div>
-      </div>
-    </div>
-
-    <!-- Small card -->
-    <div class="feed-card-small">
-      <div class="feed-img-small">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1E2530" stroke-width="1.2">
-          <rect x="3" y="3" width="18" height="18" rx="3" />
-          <circle cx="8.5" cy="8.5" r="1.5" />
-          <path d="M21 15l-5-5L5 21" />
-        </svg>
-      </div>
-      <div class="feed-body-small">
-        <div class="feed-tag">Snack</div>
-        <div class="feed-name">Kinetic Green Pi&ntilde;a</div>
-        <div class="feed-meta">Breakfast &middot; <span class="feed-kcal">312 kcal</span></div>
+        <div class="feed-tag" id="feedMealTag">Dinner</div>
+        <div class="feed-name" id="feedFoodName">Wild Atlantic Salmon Bowl</div>
+        <div class="feed-meta" id="feedMeta">Lunch &middot; <span class="feed-kcal" id="feedKcal">524 kcal</span></div>
       </div>
     </div>
   </div>
 
   <!-- Log Manually CTA -->
-  <div class="log-cta" onclick="navTo('scan')">
+  <a href="file:///android_asset/addlog.html" class="log-cta" style="text-decoration: none;" onclick="navTo('scan')">
     <div class="log-icon">
       <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2">
         <circle cx="12" cy="12" r="10" />
@@ -505,7 +488,7 @@
       <div class="log-text-strong">Log manually</div>
       <div class="log-text-sub">add previous entry</div>
     </div>
-  </div>
+  </a>
 
   <!-- Stats -->
   <div class="stats-grid">
@@ -583,7 +566,39 @@
   </div>
 
   <script>
-    
+
+    window.addEventListener("load", function () {
+      try {
+        var raw = window.AppInventor.getWebViewString();
+        if (raw) {
+          // check if it's log data
+          var data = JSON.parse(raw);
+
+          if (data.type === "save_log") {
+            // update food name
+            document.getElementById("feedFoodName").innerText = data.foodName;
+
+            // update meal tag
+            document.getElementById("feedMealTag").innerText = capitalize(data.meal);
+
+            // update meta
+            document.getElementById("feedMeta").innerHTML =
+              capitalize(data.meal) + ' &middot; <span class="feed-kcal">' + data.calories + ' kcal</span>';
+
+            // update image if exists
+            if (data.image) {
+              document.getElementById("feedImgLarge").innerHTML =
+                '<img src="' + data.image + '" style="width:100%;height:120px;object-fit:cover;">';
+            }
+          }
+        }
+      } catch (e) { }
+    });
+
+    function capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
     function updateData(data) {
       if (data.totalKcal) document.getElementById('totalKcal').textContent = data.totalKcal.toLocaleString();
     }
