@@ -1031,6 +1031,42 @@
         try { updateData(JSON.parse(window.AppInventorData)); } catch (err) { }
       }
     });
+
+    function calculateGoals(data) {
+      var weight = parseFloat(data.weight);
+      var height = parseFloat(data.height);
+      var age = parseFloat(data.age) || 24;
+      var gender = data.gender;
+      var goal = data.goal;
+
+      // BMR using Mifflin-St Jeor formula
+      var bmr;
+      if (gender === "male") {
+        bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5;
+      } else {
+        bmr = (10 * weight) + (6.25 * height) - (5 * age) - 161;
+      }
+
+      // Activity multiplier (moderate = 1.55)
+      var tdee = bmr * 1.55;
+
+      // Adjust calories based on goal
+      var calories;
+      if (goal === "lose") calories = Math.round(tdee - 500);
+      if (goal === "maintain") calories = Math.round(tdee);
+      if (goal === "gain") calories = Math.round(tdee + 500);
+
+      // Protein: 2g per kg of bodyweight
+      var protein = Math.round(weight * 2);
+
+      // Goal type label
+      var goalLabel = goal === "lose" ? "Lose weight" : goal === "gain" ? "Gain weight" : "Maintain";
+
+      // Update the UI
+      document.getElementById("goalCalories").innerText = calories.toLocaleString() + " kcal";
+      document.getElementById("goalProtein").innerText = protein + "g";
+      document.getElementById("goalType").innerText = goalLabel;
+    }
   </script>
 </body>
 
