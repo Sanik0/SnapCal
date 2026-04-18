@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Log</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: #111;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            padding-bottom: 100px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px 12px;
+        }
+
+        .back-btn {
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .topbar-title {
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .save-btn {
+            background: #AAFF00;
+            color: #111;
+            border: none;
+            border-radius: 20px;
+            padding: 7px 16px;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .section-label {
+            font-size: 10px;
+            color: #555;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 0 20px;
+            margin-bottom: 10px;
+            margin-top: 20px;
+        }
+
+        .form-card {
+            background: #1a1a1a;
+            border-radius: 14px;
+            margin: 0 20px;
+            overflow: hidden;
+        }
+
+        .form-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            border-bottom: 1px solid #222;
+            gap: 12px;
+        }
+
+        .form-row:last-child {
+            border-bottom: none;
+        }
+
+        .form-row-label {
+            font-size: 13px;
+            color: #fff;
+            font-weight: 500;
+            flex-shrink: 0;
+            min-width: 90px;
+        }
+
+        .form-input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #fff;
+            font-size: 14px;
+            text-align: right;
+            flex: 1;
+            font-family: inherit;
+        }
+
+        .form-input::placeholder {
+            color: #444;
+        }
+
+        .form-unit {
+            font-size: 12px;
+            color: #555;
+            margin-left: 4px;
+            flex-shrink: 0;
+        }
+
+        .meal-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            padding: 0 20px;
+        }
+
+        .meal-opt {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .meal-opt.selected {
+            border-color: #AAFF00;
+            background: #1C2210;
+        }
+
+        .meal-opt-icon {
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .meal-opt-label {
+            font-size: 12px;
+            color: #888;
+            font-weight: 600;
+        }
+
+        .meal-opt.selected .meal-opt-label {
+            color: #AAFF00;
+        }
+
+        .macro-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            padding: 0 20px;
+        }
+
+        .macro-card {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .macro-label {
+            font-size: 10px;
+            color: #555;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .macro-input {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #333;
+            outline: none;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 700;
+            text-align: center;
+            width: 100%;
+            font-family: inherit;
+            padding-bottom: 4px;
+        }
+
+        .macro-input::placeholder {
+            color: #333;
+            font-size: 18px;
+        }
+
+        .macro-input:focus {
+            border-bottom-color: #AAFF00;
+        }
+
+        .macro-unit {
+            font-size: 10px;
+            color: #555;
+            margin-top: 4px;
+        }
+
+        .notes-card {
+            background: #1a1a1a;
+            border-radius: 14px;
+            margin: 0 20px;
+            padding: 14px 16px;
+        }
+
+        .notes-input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #fff;
+            font-size: 14px;
+            font-family: inherit;
+            width: 100%;
+            resize: none;
+            line-height: 1.6;
+        }
+
+        .notes-input::placeholder {
+            color: #444;
+        }
+
+        .kcal-card {
+            background: #1a1a1a;
+            border-radius: 14px;
+            margin: 0 20px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .kcal-label {
+            font-size: 13px;
+            color: #888;
+        }
+
+        .kcal-right {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+
+        .kcal-input {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #333;
+            outline: none;
+            color: #AAFF00;
+            font-size: 28px;
+            font-weight: 800;
+            text-align: right;
+            width: 120px;
+            font-family: inherit;
+        }
+
+        .kcal-input::placeholder {
+            color: #2a2a2a;
+        }
+
+        .kcal-input:focus {
+            border-bottom-color: #AAFF00;
+        }
+
+        .kcal-unit-label {
+            font-size: 12px;
+            color: #555;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .btn-save {
+            width: calc(100% - 40px);
+            margin: 20px 20px 0;
+            background: #AAFF00;
+            color: #111;
+            font-size: 15px;
+            font-weight: 800;
+            border: none;
+            border-radius: 14px;
+            padding: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-save svg {
+            width: 18px;
+            height: 18px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="topbar">
+        <div class="back-btn" onclick="history.back()">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+        </div>
+        <div class="topbar-title">Add Food Log</div>
+        <button class="save-btn" onclick="saveLog()">Save</button>
+    </div>
+
+    <!-- Image Upload -->
+    <div class="section-label">Food photo</div>
+    <div style="margin: 0 20px;">
+        <div id="imagePreview" onclick="document.getElementById('imageInput').click()"
+            style="background:#1a1a1a;border:1px dashed #333;border-radius:14px;height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.5">
+                <rect x="3" y="3" width="18" height="18" rx="3" />
+                <circle cx="8.5" cy="8.5" r="1.5" />
+                <path d="M21 15l-5-5L5 21" />
+            </svg>
+            <span style="font-size:12px;color:#444;">Tap to upload photo</span>
+        </div>
+        <input id="imageInput" type="file" accept="image/*" style="display:none;" onchange="previewImage(event)">
+    </div>
+
+    <!-- Food Name & Serving -->
+    <div class="section-label">Food info</div>
+    <div class="form-card">
+        <div class="form-row">
+            <div class="form-row-label">Food name</div>
+            <input id="foodName" class="form-input" type="text" placeholder="e.g. Chicken Rice">
+        </div>
+        <div class="form-row">
+            <div class="form-row-label">Serving size</div>
+            <input id="servingSize" class="form-input" type="number" placeholder="100">
+            <span class="form-unit">g</span>
+        </div>
+    </div>
+
+    <!-- Calories -->
+    <div class="section-label">Calories</div>
+    <div class="kcal-card">
+        <div class="kcal-label">Total calories</div>
+        <div class="kcal-right">
+            <input id="calories" class="kcal-input" type="number" placeholder="0">
+            <span class="kcal-unit-label">kcal</span>
+        </div>
+    </div>
+
+    <!-- Macros -->
+    <div class="section-label">Macronutrients</div>
+    <div class="macro-grid">
+        <div class="macro-card">
+            <div class="macro-label">Protein</div>
+            <input id="protein" class="macro-input" type="number" placeholder="0">
+            <div class="macro-unit">grams</div>
+        </div>
+        <div class="macro-card">
+            <div class="macro-label">Carbs</div>
+            <input id="carbs" class="macro-input" type="number" placeholder="0">
+            <div class="macro-unit">grams</div>
+        </div>
+        <div class="macro-card">
+            <div class="macro-label">Fat</div>
+            <input id="fat" class="macro-input" type="number" placeholder="0">
+            <div class="macro-unit">grams</div>
+        </div>
+    </div>
+
+    <!-- Meal Type -->
+    <div class="section-label">Meal type</div>
+    <div class="meal-grid">
+        <div class="meal-opt" id="meal-breakfast" onclick="selectMeal('breakfast')">
+            <div class="meal-opt-icon">🌅</div>
+            <div class="meal-opt-label">Breakfast</div>
+        </div>
+        <div class="meal-opt" id="meal-lunch" onclick="selectMeal('lunch')">
+            <div class="meal-opt-icon">☀️</div>
+            <div class="meal-opt-label">Lunch</div>
+        </div>
+        <div class="meal-opt" id="meal-dinner" onclick="selectMeal('dinner')">
+            <div class="meal-opt-icon">🌙</div>
+            <div class="meal-opt-label">Dinner</div>
+        </div>
+        <div class="meal-opt" id="meal-snack" onclick="selectMeal('snack')">
+            <div class="meal-opt-icon">🍎</div>
+            <div class="meal-opt-label">Snack</div>
+        </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="section-label">Notes</div>
+    <div class="notes-card">
+        <textarea id="notes" class="notes-input" rows="3" placeholder="Any additional notes..."></textarea>
+    </div>
+
+    <!-- Save Button -->
+    <button class="btn-save" onclick="saveLog()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.5">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 8v8M8 12h8" />
+        </svg>
+        Add to Log
+    </button>
+
+    <script>
+        var selectedMeal = "";
+
+        function selectMeal(type) {
+            selectedMeal = type;
+            ["breakfast", "lunch", "dinner", "snack"].forEach(function (m) {
+                document.getElementById("meal-" + m).classList.toggle("selected", m === type);
+            });
+        }
+
+        function saveLog() {
+            var foodName = document.getElementById("foodName").value.trim();
+            var servingSize = document.getElementById("servingSize").value.trim();
+            var calories = document.getElementById("calories").value.trim();
+            var protein = document.getElementById("protein").value.trim();
+            var carbs = document.getElementById("carbs").value.trim();
+            var fat = document.getElementById("fat").value.trim();
+            var notes = document.getElementById("notes").value.trim();
+
+            if (!foodName) { alert("Please enter a food name."); return; }
+            if (!calories) { alert("Please enter calories."); return; }
+            if (!selectedMeal) { alert("Please select a meal type."); return; }
+
+            var log = JSON.stringify({
+                type: "save_log",
+                foodName: foodName,
+                servingSize: servingSize || "0",
+                calories: calories,
+                protein: protein || "0",
+                carbs: carbs || "0",
+                fat: fat || "0",
+                meal: selectedMeal,
+                notes: notes,
+                date: new Date().toLocaleDateString(),
+                time: new Date().toLocaleTimeString()
+            });
+
+            window.AppInventor.setWebViewString(log);
+        }
+    </script>
+
+</body>
+
+</html>
