@@ -1,364 +1,435 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>SnapCal Logs</title>
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>SnapCal Logs</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-  body {
-    background: #111111;
-    color: #FFFFFF;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    min-height: 100vh;
-    padding-bottom: 80px;
-  }
+    body {
+      background: #111111;
+      color: #FFFFFF;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      padding-bottom: 80px;
+    }
 
-  /* Top Nav */
-  .topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 20px 12px;
-  }
-  .topbar .menu-icon {
-    display: flex; flex-direction: column; gap: 5px; cursor: pointer;
-  }
-  .topbar .menu-icon span {
-    display: block; width: 22px; height: 2px; background: #FFFFFF; border-radius: 2px;
-  }
-  .topbar .logo {
-    font-size: 18px; font-weight: 700; color: #FFFFFF; letter-spacing: 0.5px;
-  }
-  .topbar .avatar {
-    width: 34px; height: 34px; border-radius: 50%;
-    background: #333; border: 2px solid #AAFF00;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-weight: 600; color: #AAFF00;
-  }
+    /* Top Nav */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px 12px;
+    }
 
-  /* Page Title */
-  .page-title {
-    font-size: 28px; font-weight: 800; color: #FFFFFF;
-    padding: 4px 20px 16px;
-  }
+    .topbar .menu-icon {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+    }
 
-  /* Search */
-  .search-wrap { padding: 0 20px 20px; }
-  .search-box {
-    display: flex; align-items: center; gap: 10px;
-    background: #1A1A1A; border-radius: 12px;
-    padding: 12px 14px; border: 1px solid #222;
-  }
-  .search-box svg { width: 16px; height: 16px; flex-shrink: 0; }
-  .search-box input {
-    background: none; border: none; outline: none;
-    font-size: 14px; color: #FFFFFF; width: 100%;
-    font-family: inherit;
-  }
-  .search-box input::placeholder { color: #444; }
+    .topbar .menu-icon span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: #FFFFFF;
+      border-radius: 2px;
+    }
 
-  /* Day Group */
-  .day-group { margin-bottom: 6px; }
-  .day-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 20px 10px;
-  }
-  .day-label {
-    font-size: 11px; font-weight: 700; color: #AAFF00;
-    letter-spacing: 1.2px; text-transform: uppercase;
-  }
-  .day-total { font-size: 11px; color: #444; letter-spacing: 0.5px; }
+    .topbar .logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: #FFFFFF;
+      letter-spacing: 0.5px;
+    }
 
-  /* Meal Cards */
-  .meal-list { padding: 0 20px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
-  .meal-card {
-    background: #1A1A1A; border-radius: 14px;
-    display: flex; align-items: center; gap: 12px;
-    padding: 12px 14px; cursor: pointer;
-  }
-  .meal-img {
-    width: 54px; height: 54px; border-radius: 10px;
-    background: #222; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    overflow: hidden;
-  }
-  .meal-img img { width: 100%; height: 100%; object-fit: cover; }
-  .meal-img svg { width: 24px; height: 24px; }
-  .meal-info { flex: 1; min-width: 0; }
-  .meal-name {
-    font-size: 14px; font-weight: 600; color: #FFFFFF;
-    margin-bottom: 4px; white-space: nowrap;
-    overflow: hidden; text-overflow: ellipsis;
-  }
-  .meal-time {
-    display: flex; align-items: center; gap: 5px;
-    font-size: 11px; color: #555;
-  }
-  .meal-time svg { width: 11px; height: 11px; flex-shrink: 0; }
-  .meal-kcal {
-    font-size: 20px; font-weight: 700; color: #AAFF00;
-    flex-shrink: 0;
-  }
+    .topbar .avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #333;
+      border: 2px solid #AAFF00;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: #AAFF00;
+    }
 
-  /* Collapsed day */
-  .day-collapsed {
-    margin: 0 20px 16px;
-    background: #1A1A1A; border-radius: 14px;
-    padding: 14px 16px;
-    display: flex; align-items: center; justify-content: space-between;
-    cursor: pointer;
-  }
-  .day-collapsed-left {}
-  .day-collapsed-label { font-size: 11px; font-weight: 700; color: #555; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 3px; }
-  .day-collapsed-count { font-size: 12px; color: #444; }
-  .day-collapsed-link { font-size: 12px; font-weight: 600; color: #AAFF00; letter-spacing: 0.5px; }
+    /* Page Title */
+    .page-title {
+      font-size: 28px;
+      font-weight: 800;
+      color: #FFFFFF;
+      padding: 4px 20px 16px;
+    }
 
-  /* Bottom Nav */
-  .bottom-nav {
-    position: fixed; bottom: 0; left: 0; right: 0;
-    background: #181818; border-top: 1px solid #222;
-    display: flex; justify-content: space-around;
-    padding: 10px 0 16px;
-  }
-  .nav-item {
-    display: flex; flex-direction: column; align-items: center;
-    gap: 4px; cursor: pointer; flex: 1;
-    text-decoration: none;
-  }
-  .nav-item svg { width: 22px; height: 22px; }
-  .nav-item span { font-size: 10px; color: #555; letter-spacing: 0.5px; text-transform: uppercase; }
-  .nav-item.active span { color: #AAFF00; }
-  .nav-scan-btn {
-    width: 52px; height: 52px; border-radius: 50%;
-    background: #AAFF00; display: flex; align-items: center;
-    justify-content: center; margin-top: -20px;
-    box-shadow: 0 4px 16px rgba(170,255,0,0.3);
-    cursor: pointer;
-  }
-  .nav-scan-btn svg { width: 24px; height: 24px; color: #111; }
-</style>
+    /* Search */
+    .search-wrap {
+      padding: 0 20px 20px;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #1A1A1A;
+      border-radius: 12px;
+      padding: 12px 14px;
+      border: 1px solid #222;
+    }
+
+    .search-box svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    .search-box input {
+      background: none;
+      border: none;
+      outline: none;
+      font-size: 14px;
+      color: #FFFFFF;
+      width: 100%;
+      font-family: inherit;
+    }
+
+    .search-box input::placeholder {
+      color: #444;
+    }
+
+    /* Day Group */
+    .day-group {
+      margin-bottom: 6px;
+    }
+
+    .day-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px 10px;
+    }
+
+    .day-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #AAFF00;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+    }
+
+    .day-total {
+      font-size: 11px;
+      color: #444;
+      letter-spacing: 0.5px;
+    }
+
+    /* Meal Cards */
+    .meal-list {
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .meal-card {
+      background: #1A1A1A;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      cursor: pointer;
+    }
+
+    .meal-img {
+      width: 54px;
+      height: 54px;
+      border-radius: 10px;
+      background: #222;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .meal-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .meal-img svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .meal-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .meal-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #FFFFFF;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .meal-time {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: #555;
+    }
+
+    .meal-time svg {
+      width: 11px;
+      height: 11px;
+      flex-shrink: 0;
+    }
+
+    .meal-kcal {
+      font-size: 20px;
+      font-weight: 700;
+      color: #AAFF00;
+      flex-shrink: 0;
+    }
+
+    /* Collapsed day */
+    .day-collapsed {
+      margin: 0 20px 16px;
+      background: #1A1A1A;
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+
+    .day-collapsed-left {}
+
+    .day-collapsed-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #555;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+
+    .day-collapsed-count {
+      font-size: 12px;
+      color: #444;
+    }
+
+    .day-collapsed-link {
+      font-size: 12px;
+      font-weight: 600;
+      color: #AAFF00;
+      letter-spacing: 0.5px;
+    }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #181818;
+      border-top: 1px solid #222;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0 16px;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      flex: 1;
+      text-decoration: none;
+    }
+
+    .nav-item svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .nav-item span {
+      font-size: 10px;
+      color: #555;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .nav-item.active span {
+      color: #AAFF00;
+    }
+
+    .nav-scan-btn {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: #AAFF00;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: -20px;
+      box-shadow: 0 4px 16px rgba(170, 255, 0, 0.3);
+      cursor: pointer;
+    }
+
+    .nav-scan-btn svg {
+      width: 24px;
+      height: 24px;
+      color: #111;
+    }
+  </style>
 </head>
+
 <body>
 
-<!-- Top Bar -->
-<div class="topbar">
-  <div class="menu-icon">
-    <span></span><span></span><span></span>
-  </div>
-  <div class="logo">SnapCal</div>
-  <div class="avatar">U</div>
-</div>
-
-<!-- Page Title -->
-<div class="page-title">Meal History</div>
-
-<!-- Search -->
-<div class="search-wrap">
-  <div class="search-box">
-    <svg viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="2">
-      <circle cx="11" cy="11" r="8"/>
-      <path d="M21 21l-4.35-4.35"/>
-    </svg>
-    <input type="text" placeholder="Find specific foods..." id="searchInput" oninput="filterMeals(this.value)" />
-  </div>
-</div>
-
-<!-- TODAY -->
-<div class="day-group">
-  <div class="day-header">
-    <span class="day-label">Today, Oct 24</span>
-    <span class="day-total">1,540 kcal total</span>
-  </div>
-  <div class="meal-list">
-    <div class="meal-card">
-      <div class="meal-img">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#2A3A24" stroke-width="1.2">
-          <rect x="3" y="3" width="18" height="18" rx="3"/>
-          <circle cx="8.5" cy="8.5" r="1.5"/>
-          <path d="M21 15l-5-5L5 21"/>
-        </svg>
-      </div>
-      <div class="meal-info">
-        <div class="meal-name">Grilled Chicken Salad</div>
-        <div class="meal-time">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/>
-            <path d="M12 6v6l4 2"/>
-          </svg>
-          13:45 PM
-        </div>
-      </div>
-      <div class="meal-kcal">420</div>
+  <!-- Top Bar -->
+  <div class="topbar">
+    <div class="menu-icon">
+      <span></span><span></span><span></span>
     </div>
-
-    <div class="meal-card">
-      <div class="meal-img">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#2A2A1E" stroke-width="1.2">
-          <rect x="3" y="3" width="18" height="18" rx="3"/>
-          <circle cx="8.5" cy="8.5" r="1.5"/>
-          <path d="M21 15l-5-5L5 21"/>
-        </svg>
-      </div>
-      <div class="meal-info">
-        <div class="meal-name">Berry Oat Porridge</div>
-        <div class="meal-time">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/>
-            <path d="M12 6v6l4 2"/>
-          </svg>
-          08:15 AM
-        </div>
-      </div>
-      <div class="meal-kcal">310</div>
-    </div>
+    <div class="logo">SnapCal</div>
+    <div class="avatar">U</div>
   </div>
-</div>
 
-<!-- YESTERDAY -->
-<div class="day-group">
-  <div class="day-header">
-    <span class="day-label">Yesterday, Oct 23</span>
-    <span class="day-total">2,150 kcal total</span>
-  </div>
-  <div class="meal-list">
-    <div class="meal-card">
-      <div class="meal-img">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#1E2A1E" stroke-width="1.2">
-          <rect x="3" y="3" width="18" height="18" rx="3"/>
-          <circle cx="8.5" cy="8.5" r="1.5"/>
-          <path d="M21 15l-5-5L5 21"/>
-        </svg>
-      </div>
-      <div class="meal-info">
-        <div class="meal-name">Pesto Pasta Carbonara</div>
-        <div class="meal-time">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/>
-            <path d="M12 6v6l4 2"/>
-          </svg>
-          19:30 PM
-        </div>
-      </div>
-      <div class="meal-kcal">840</div>
-    </div>
+  <!-- Page Title -->
+  <div class="page-title">Meal History</div>
 
-    <div class="meal-card">
-      <div class="meal-img">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#2A1E1E" stroke-width="1.2">
-          <rect x="3" y="3" width="18" height="18" rx="3"/>
-          <circle cx="8.5" cy="8.5" r="1.5"/>
-          <path d="M21 15l-5-5L5 21"/>
-        </svg>
-      </div>
-      <div class="meal-info">
-        <div class="meal-name">Margherita Slice</div>
-        <div class="meal-time">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/>
-            <path d="M12 6v6l4 2"/>
-          </svg>
-          12:10 PM
-        </div>
-      </div>
-      <div class="meal-kcal">290</div>
-    </div>
-  </div>
-</div>
-
-<!-- TUESDAY OCT 22 - collapsed -->
-<div class="day-group">
-  <div class="day-header">
-    <span class="day-label">Tuesday, Oct 22</span>
-    <span class="day-total">1,900 kcal total</span>
-  </div>
-  <div class="day-collapsed" onclick="expandDay(this)">
-    <div class="day-collapsed-left">
-      <div class="day-collapsed-label">3 meals logged</div>
-      <div class="day-collapsed-count">Tap to expand</div>
-    </div>
-    <span class="day-collapsed-link">View full day</span>
-  </div>
-</div>
-
-<!-- Bottom Nav -->
-<div class="bottom-nav">
-  <a class="nav-item" href="file:///android_asset/home.html" style="text-decoration:none;">
-    <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8">
-      <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/>
-      <path d="M9 21V12h6v9"/>
-    </svg>
-    <span>Home</span>
-  </a>
-  <a class="nav-item active" href="file:///android_asset/logs.html" style="text-decoration:none;">
-    <svg viewBox="0 0 24 24" fill="none" stroke="#AAFF00" stroke-width="1.8">
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-      <polyline points="14 2 14 8 20 8"/>
-      <line x1="16" y1="13" x2="8" y2="13"/>
-      <line x1="16" y1="17" x2="8" y2="17"/>
-      <polyline points="10 9 9 9 8 9"/>
-    </svg>
-    <span>Logs</span>
-  </a>
-  <a class="nav-item" href="file:///android_asset/scan.html" style="text-decoration:none;">
-    <div class="nav-scan-btn">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.2">
-        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-        <circle cx="12" cy="13" r="4"/>
+  <!-- Search -->
+  <div class="search-wrap">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="2">
+        <circle cx="11" cy="11" r="8" />
+        <path d="M21 21l-4.35-4.35" />
       </svg>
+      <input type="text" placeholder="Find specific foods..." id="searchInput" oninput="filterMeals(this.value)" />
     </div>
-    <span>Scan</span>
-  </a>
-  <a class="nav-item" href="file:///android_asset/statistics.html" style="text-decoration:none;">
-    <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8">
-      <rect x="3" y="3" width="7" height="7" rx="1"/>
-      <rect x="14" y="3" width="7" height="7" rx="1"/>
-      <rect x="14" y="14" width="7" height="7" rx="1"/>
-      <rect x="3" y="14" width="7" height="7" rx="1"/>
-    </svg>
-    <span>Stats</span>
-  </a>
-  <a class="nav-item" href="file:///android_asset/profile.html" style="text-decoration:none;">
-    <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8">
-      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-      <circle cx="12" cy="7" r="4"/>
-    </svg>
-    <span>Profile</span>
-  </a>
-</div>
+  </div>
 
-<script>
-  function filterMeals(query) {
-    var cards = document.querySelectorAll('.meal-card');
-    var q = query.toLowerCase();
-    cards.forEach(function(card) {
-      var name = card.querySelector('.meal-name').textContent.toLowerCase();
-      card.style.display = name.includes(q) ? 'flex' : 'none';
+  <div class="day-group">
+    <div class="day-header">
+      <span class="day-label" id="todayLabel">Today</span>
+      <span class="day-total" id="todayTotal">0 kcal total</span>
+    </div>
+    <div class="meal-list" id="mealList">
+      <!-- logs will be injected here -->
+    </div>
+  </div>
+
+  <!-- Bottom Nav -->
+  <div class="bottom-nav">
+    <a class="nav-item" href="file:///android_asset/home.html" style="text-decoration:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8">
+        <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z" />
+        <path d="M9 21V12h6v9" />
+      </svg>
+      <span>Home</span>
+    </a>
+    <a class="nav-item" onclick="navTo('LOGS')" style="text-decoration:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#AAFF00" stroke-width="1.8">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <polyline points="14 2 14 8 20 8" />
+        <line x1="16" y1="13" x2="8" y2="13" />
+        <line x1="16" y1="17" x2="8" y2="17" />
+        <polyline points="10 9 9 9 8 9" />
+      </svg>
+      <span>Logs</span>
+    </a>
+    <a class="nav-item" href="file:///android_asset/scan.html" style="text-decoration:none;">
+      <div class="nav-scan-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.2">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+          <circle cx="12" cy="13" r="4" />
+        </svg>
+      </div>
+      <span>Scan</span>
+    </a>
+    <a class="nav-item" href="file:///android_asset/statistics.html" style="text-decoration:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8">
+        <rect x="3" y="3" width="7" height="7" rx="1" />
+        <rect x="14" y="3" width="7" height="7" rx="1" />
+        <rect x="14" y="14" width="7" height="7" rx="1" />
+        <rect x="3" y="14" width="7" height="7" rx="1" />
+      </svg>
+      <span>Stats</span>
+    </a>
+    <a class="nav-item" href="file:///android_asset/profile.html" style="text-decoration:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+        <circle cx="12" cy="7" r="4" />
+      </svg>
+      <span>Profile</span>
+    </a>
+  </div>
+
+  <script>
+    function navTo(screen) {
+      if (window.AppInventor) {
+        window.AppInventor.setWebViewString('NAV:' + screen.toUpperCase());
+      }
+    }
+
+    window.addEventListener("load", function () {
+      try {
+        var raw = window.AppInventor.getWebViewString();
+        if (!raw) return;
+        var data = JSON.parse(raw);
+        if (!data.logs || data.logs.length === 0) return;
+
+        var totalKcal = 0;
+        var mealList = document.getElementById("mealList");
+        mealList.innerHTML = "";
+
+        data.logs.forEach(function (log) {
+          totalKcal += parseFloat(log.calories) || 0;
+
+          var imgContent = log.image
+            ? '<img src="' + log.image + '" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">'
+            : '<svg viewBox="0 0 24 24" fill="none" stroke="#2A3A24" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>';
+
+          mealList.innerHTML += '<div class="meal-card">' +
+            '<div class="meal-img">' + imgContent + '</div>' +
+            '<div class="meal-info">' +
+            '<div class="meal-name">' + log.foodName + '</div>' +
+            '<div class="meal-time">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>' +
+            log.time +
+            '</div>' +
+            '</div>' +
+            '<div class="meal-kcal">' + log.calories + '</div>' +
+            '</div>';
+        });
+
+        document.getElementById("todayTotal").innerText = totalKcal.toLocaleString() + " kcal total";
+      } catch (e) { }
     });
-  }
-
-  function expandDay(el) {
-    if (window.AppInventor) {
-      window.AppInventor.setWebViewString('ACTION:EXPAND_DAY');
-    }
-  }
-
-  function updateData(data) {
-    if (data.meals && data.meals.length > 0) {
-      // MIT App Inventor can push meal data here
-    }
-  }
-
-  window.addEventListener('message', function(e) {
-    try { updateData(JSON.parse(e.data)); } catch(err) {}
-  });
-
-  document.addEventListener('DOMContentLoaded', function() {
-    if (window.AppInventorData) {
-      try { updateData(JSON.parse(window.AppInventorData)); } catch(err) {}
-    }
-  });
-</script>
+  </script>
 </body>
+
 </html>
