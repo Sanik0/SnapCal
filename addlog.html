@@ -312,7 +312,8 @@
     <!-- Image Upload -->
     <div class="section-label">Food photo</div>
     <div style="margin: 0 20px;">
-        <div id="imagePreview" onclick="document.getElementById('imageInput').click()"
+        <!-- replace your existing image input with this -->
+        <div id="imagePreview" onclick="pickImage()"
             style="background:#1a1a1a;border:1px dashed #333;border-radius:14px;height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.5">
                 <rect x="3" y="3" width="18" height="18" rx="3" />
@@ -321,7 +322,6 @@
             </svg>
             <span style="font-size:12px;color:#444;">Tap to upload photo</span>
         </div>
-        <input id="imageInput" type="file" accept="image/*" style="display:none;" onchange="previewImage(event)">
     </div>
 
     <!-- Food Name & Serving -->
@@ -413,6 +413,16 @@
             ["breakfast", "lunch", "dinner", "snack"].forEach(function (m) {
                 document.getElementById("meal-" + m).classList.toggle("selected", m === type);
             });
+        }
+
+        function pickImage() {
+            window.AppInventor.setWebViewString("PICK_IMAGE");
+        }
+
+        function setPickedImage(path) {
+            imageBase64 = path;
+            document.getElementById("imagePreview").innerHTML =
+                '<img src="' + path + '" style="width:100%;height:160px;object-fit:cover;border-radius:14px;">';
         }
 
         function previewImage(event) {
