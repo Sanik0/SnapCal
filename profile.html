@@ -942,6 +942,8 @@
         document.getElementById("bodyWeight").innerText = data.weight || "--";
         document.getElementById("bodyHeight").innerText = data.height || "--";
         document.getElementById("bodyAge").innerText = data.age || "--";
+
+        calculateGoals(data);
       } catch (e) { }
     });
 
