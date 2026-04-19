@@ -401,7 +401,7 @@
 </head>
 
 <body>
-
+  <div id="debugDiv" style="color:red;font-size:10px;word-break:break-all;padding:10px;"></div>
   <!-- Top Bar -->
   <div class="topbar">
     <div class="menu-icon">
@@ -594,8 +594,8 @@
       var weight = parseFloat(userData.weight) || 70;
       var height = parseFloat(userData.height) || 170;
       var age = parseFloat(userData.age) || 24;
-      var gender = userData.gender;
-      var goal = userData.goal;
+      var gender = userData.gender || "male";
+      var goal = userData.goal || "maintain";
 
       var bmr = gender === "male"
         ? (10 * weight) + (6.25 * height) - (5 * age) + 5
@@ -610,19 +610,26 @@
       var goalCarbs = Math.round((goalKcal * 0.45) / 4);
       var goalFats = Math.round((goalKcal * 0.25) / 9);
 
-      document.getElementById("totalKcal").innerText = totalKcal.toLocaleString();
+      var totalKcalEl = document.getElementById("totalKcal");
+      var progressRing = document.getElementById("progressRing");
+      var proteinVal = document.getElementById("proteinVal");
+      var carbsVal = document.getElementById("carbsVal");
+      var fatsVal = document.getElementById("fatsVal");
+      var proteinBar = document.getElementById("proteinBar");
+      var carbsBar = document.getElementById("carbsBar");
+      var fatsBar = document.getElementById("fatsBar");
 
-      var circumference = 390;
-      var progress = Math.min(totalKcal / goalKcal, 1);
-      var offset = circumference - (circumference * progress);
-      document.getElementById("progressRing").setAttribute("stroke-dashoffset", offset);
-
-      document.getElementById("proteinVal").innerText = totalProtein + "g / " + goalProtein + "g";
-      document.getElementById("carbsVal").innerText = totalCarbs + "g / " + goalCarbs + "g";
-      document.getElementById("fatsVal").innerText = totalFats + "g / " + goalFats + "g";
-      document.getElementById("proteinBar").style.width = Math.min((totalProtein / goalProtein) * 100, 100) + "%";
-      document.getElementById("carbsBar").style.width = Math.min((totalCarbs / goalCarbs) * 100, 100) + "%";
-      document.getElementById("fatsBar").style.width = Math.min((totalFats / goalFats) * 100, 100) + "%";
+      if (totalKcalEl) totalKcalEl.innerText = totalKcal.toLocaleString();
+      if (progressRing) {
+        var offset = 390 - (390 * Math.min(totalKcal / goalKcal, 1));
+        progressRing.setAttribute("stroke-dashoffset", offset);
+      }
+      if (proteinVal) proteinVal.innerText = totalProtein + "g / " + goalProtein + "g";
+      if (carbsVal) carbsVal.innerText = totalCarbs + "g / " + goalCarbs + "g";
+      if (fatsVal) fatsVal.innerText = totalFats + "g / " + goalFats + "g";
+      if (proteinBar) proteinBar.style.width = Math.min((totalProtein / goalProtein) * 100, 100) + "%";
+      if (carbsBar) carbsBar.style.width = Math.min((totalCarbs / goalCarbs) * 100, 100) + "%";
+      if (fatsBar) fatsBar.style.width = Math.min((totalFats / goalFats) * 100, 100) + "%";
     }
 
     window.addEventListener("load", function () {
@@ -634,36 +641,41 @@
         var logsData = null;
 
         if (raw.indexOf("|LOGS|") !== -1) {
-          var parts = raw.split("|LOGS|");
-          userData = JSON.parse(parts[0]);
-          logsData = parts[1] ? JSON.parse(parts[1]) : null;
-        } else {
-          var data = JSON.parse(raw);
-          if (data.type === "save_log") {
-            logsData = data;
-          } else {
-            userData = data;
+          var idx = raw.indexOf("|LOGS|");
+          var uRaw = raw.substring(0, idx);
+          var lRaw = raw.substring(idx + 6);
+          if (uRaw) userData = JSON.parse(uRaw);
+          if (lRaw && lRaw.length > 2) {
+            var lParsed = JSON.parse(lRaw);
+            logsData = lParsed.logs ? lParsed : { logs: lParsed };
           }
+        } else if (raw.indexOf('"type":"save_log"') !== -1) {
+          logsData = JSON.parse(raw);
+        } else if (raw.indexOf('"name"') !== -1) {
+          userData = JSON.parse(raw);
         }
 
-        if (userData.name) {
-          document.getElementById("profileName").innerText = userData.name;
-        }
+        var profileEl = document.getElementById("profileName");
+        if (userData.name && profileEl) profileEl.innerText = userData.name;
 
         if (logsData && logsData.logs && logsData.logs.length > 0) {
           var latest = logsData.logs[logsData.logs.length - 1];
-          document.getElementById("feedFoodName").innerText = latest.foodName;
-          document.getElementById("feedMealTag").innerText = capitalize(latest.meal);
-          document.getElementById("feedMeta").innerHTML =
+          var foodNameEl = document.getElementById("feedFoodName");
+          var mealTagEl = document.getElementById("feedMealTag");
+          var metaEl = document.getElementById("feedMeta");
+          var imgEl = document.getElementById("feedImgLarge");
+
+          if (foodNameEl) foodNameEl.innerText = latest.foodName;
+          if (mealTagEl) mealTagEl.innerText = capitalize(latest.meal);
+          if (metaEl) metaEl.innerHTML =
             capitalize(latest.meal) + ' &middot; <span class="feed-kcal">' + latest.calories + ' kcal</span>';
-          if (latest.image) {
-            document.getElementById("feedImgLarge").innerHTML =
-              '<img src="' + latest.image + '" style="width:100%;height:120px;object-fit:cover;">';
+          if (imgEl && latest.image) {
+            imgEl.innerHTML = '<img src="' + latest.image + '" style="width:100%;height:120px;object-fit:cover;">';
           }
           updateDashboard(logsData.logs, userData);
         }
       } catch (e) { }
-    });  
+    });
   </script>
 </body>
 
