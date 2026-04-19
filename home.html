@@ -417,11 +417,11 @@
     <div class="ring-outer">
       <svg width="150" height="150" viewBox="0 0 150 150">
         <circle cx="75" cy="75" r="62" fill="none" stroke="#222" stroke-width="9" />
-        <circle cx="75" cy="75" r="62" fill="none" stroke="#AAFF00" stroke-width="9" stroke-dasharray="390"
-          stroke-dashoffset="97" stroke-linecap="round" transform="rotate(-90 75 75)" />
+        <circle id="progressRing" cx="75" cy="75" r="62" fill="none" stroke="#AAFF00" stroke-width="9"
+          stroke-dasharray="390" stroke-dashoffset="390" stroke-linecap="round" transform="rotate(-90 75 75)" />
       </svg>
       <div class="ring-center">
-        <div class="ring-kcal" id="totalKcal">1,240</div>
+        <div class="ring-kcal" id="totalKcal">0</div>
         <div class="ring-unit">kcal</div>
       </div>
     </div>
@@ -433,23 +433,23 @@
     <div class="macro-row">
       <span class="macro-name">Protein</span>
       <div class="macro-bar-track">
-        <div class="macro-bar-fill" style="width:62%"></div>
+        <div class="macro-bar-fill" id="proteinBar" style="width:0%"></div>
       </div>
-      <span class="macro-val">124g / 180g</span>
+      <span class="macro-val" id="proteinVal">0g / 0g</span>
     </div>
     <div class="macro-row">
       <span class="macro-name">Carbs</span>
       <div class="macro-bar-track">
-        <div class="macro-bar-fill" style="width:78%"></div>
+        <div class="macro-bar-fill" id="carbsBar" style="width:0%"></div>
       </div>
-      <span class="macro-val">210g / 270g</span>
+      <span class="macro-val" id="carbsVal">0g / 0g</span>
     </div>
     <div class="macro-row">
       <span class="macro-name">Fats</span>
       <div class="macro-bar-track">
-        <div class="macro-bar-fill" style="width:38%"></div>
+        <div class="macro-bar-fill" id="fatsBar" style="width:0%"></div>
       </div>
-      <span class="macro-val">42g / 110g</span>
+      <span class="macro-val" id="fatsVal">0g / 0g</span>
     </div>
   </div>
 
@@ -520,7 +520,7 @@
 
   <!-- Bottom Nav -->
   <div class="bottom-nav">
-    <a class="nav-item active" href="file:///android_asset/home.html" style="text-decoration:none;">
+    <a class="nav-item active" onclick="navTo('HOME')" style="text-decoration:none;">
       <svg viewBox="0 0 24 24" fill="none" stroke="#AAFF00" stroke-width="1.8">
         <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z" />
         <path d="M9 21V12h6v9" />
@@ -575,18 +575,83 @@
       }
     }
 
+    function updateDashboard(logs, userData) {
+      var totalKcal = 0;
+      var totalProtein = 0;
+      var totalCarbs = 0;
+      var totalFats = 0;
+      var today = new Date().toLocaleDateString();
+
+      logs.forEach(function (log) {
+        if (log.date === today) {
+          totalKcal += parseFloat(log.calories) || 0;
+          totalProtein += parseFloat(log.protein) || 0;
+          totalCarbs += parseFloat(log.carbs) || 0;
+          totalFats += parseFloat(log.fat) || 0;
+        }
+      });
+
+      var weight = parseFloat(userData.weight) || 70;
+      var height = parseFloat(userData.height) || 170;
+      var age = parseFloat(userData.age) || 24;
+      var gender = userData.gender;
+      var goal = userData.goal;
+
+      var bmr = gender === "male"
+        ? (10 * weight) + (6.25 * height) - (5 * age) + 5
+        : (10 * weight) + (6.25 * height) - (5 * age) - 161;
+
+      var tdee = bmr * 1.55;
+      var goalKcal = goal === "lose" ? Math.round(tdee - 500)
+        : goal === "gain" ? Math.round(tdee + 500)
+          : Math.round(tdee);
+
+      var goalProtein = Math.round(weight * 2);
+      var goalCarbs = Math.round((goalKcal * 0.45) / 4);
+      var goalFats = Math.round((goalKcal * 0.25) / 9);
+
+      document.getElementById("totalKcal").innerText = totalKcal.toLocaleString();
+
+      var circumference = 390;
+      var progress = Math.min(totalKcal / goalKcal, 1);
+      var offset = circumference - (circumference * progress);
+      document.getElementById("progressRing").setAttribute("stroke-dashoffset", offset);
+
+      document.getElementById("proteinVal").innerText = totalProtein + "g / " + goalProtein + "g";
+      document.getElementById("carbsVal").innerText = totalCarbs + "g / " + goalCarbs + "g";
+      document.getElementById("fatsVal").innerText = totalFats + "g / " + goalFats + "g";
+      document.getElementById("proteinBar").style.width = Math.min((totalProtein / goalProtein) * 100, 100) + "%";
+      document.getElementById("carbsBar").style.width = Math.min((totalCarbs / goalCarbs) * 100, 100) + "%";
+      document.getElementById("fatsBar").style.width = Math.min((totalFats / goalFats) * 100, 100) + "%";
+    }
+
     window.addEventListener("load", function () {
       try {
         var raw = window.AppInventor.getWebViewString();
         if (!raw) return;
-        var data = JSON.parse(raw);
 
-        if (data.name) {
-          document.getElementById("profileName").innerText = data.name;
+        var userData = {};
+        var logsData = null;
+
+        if (raw.indexOf("|LOGS|") !== -1) {
+          var parts = raw.split("|LOGS|");
+          userData = JSON.parse(parts[0]);
+          logsData = parts[1] ? JSON.parse(parts[1]) : null;
+        } else {
+          var data = JSON.parse(raw);
+          if (data.type === "save_log") {
+            logsData = data;
+          } else {
+            userData = data;
+          }
         }
 
-        if (data.type === "save_log" && data.logs && data.logs.length > 0) {
-          var latest = data.logs[data.logs.length - 1];
+        if (userData.name) {
+          document.getElementById("profileName").innerText = userData.name;
+        }
+
+        if (logsData && logsData.logs && logsData.logs.length > 0) {
+          var latest = logsData.logs[logsData.logs.length - 1];
           document.getElementById("feedFoodName").innerText = latest.foodName;
           document.getElementById("feedMealTag").innerText = capitalize(latest.meal);
           document.getElementById("feedMeta").innerHTML =
@@ -595,9 +660,10 @@
             document.getElementById("feedImgLarge").innerHTML =
               '<img src="' + latest.image + '" style="width:100%;height:120px;object-fit:cover;">';
           }
+          updateDashboard(logsData.logs, userData);
         }
       } catch (e) { }
-    });
+    });  
   </script>
 </body>
 
