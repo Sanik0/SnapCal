@@ -408,6 +408,23 @@
         var selectedMeal = "";
         var imageBase64 = "";
 
+        var existingLogs = [];
+
+        window.addEventListener("load", function () {
+            try {
+                var raw = window.AppInventor.getWebViewString();
+                if (raw) {
+                    var i = raw.indexOf("{");
+                    if (i !== -1) {
+                        var parsed = JSON.parse(raw.substring(i));
+                        if (parsed && parsed.logs) {
+                            existingLogs = parsed.logs;
+                        }
+                    }
+                }
+            } catch (e) { }
+        });
+
         function selectMeal(type) {
             selectedMeal = type;
             ["breakfast", "lunch", "dinner", "snack"].forEach(function (m) {
@@ -419,23 +436,19 @@
             window.AppInventor.setWebViewString("PICK_IMAGE");
         }
 
-        function setPickedImage(path) {
-            imageBase64 = path;
-            document.getElementById("imagePreview").innerHTML =
-                '<img src="' + path + '" style="width:100%;height:160px;object-fit:cover;border-radius:14px;">';
-        }
-
-        function previewImage(event) {
-            var file = event.target.files[0];
-            if (!file) return;
-            var reader = new FileReader();
-            reader.onload = function (e) {
-                imageBase64 = e.target.result;
-                document.getElementById("imagePreview").innerHTML =
-                    '<img src="' + imageBase64 + '" style="width:100%;height:160px;object-fit:cover;border-radius:14px;">';
-            };
-            reader.readAsDataURL(file);
-        }
+        // check for image data every 300ms
+        var imageInterval = setInterval(function () {
+            try {
+                var raw = window.AppInventor.getWebViewString();
+                if (raw && raw.indexOf("IMAGE:") === 0) {
+                    clearInterval(imageInterval);
+                    var base64 = raw.substring(6);
+                    imageBase64 = "data:image/jpeg;base64," + base64;
+                    document.getElementById("imagePreview").innerHTML =
+                        '<img src="' + imageBase64 + '" style="width:100%;height:160px;object-fit:cover;border-radius:14px;">';
+                }
+            } catch (e) { }
+        }, 300);
 
         function saveLog() {
             var foodName = document.getElementById("foodName").value.trim();
@@ -450,32 +463,6 @@
             if (!calories) { alert("Please enter calories."); return; }
             if (!selectedMeal) { alert("Please select a meal type."); return; }
 
-            // get existing logs
-            var existingLogs = [];
-            try {
-                var raw = window.AppInventor.getWebViewString();
-                if (raw) {
-                    var separatorIndex = raw.indexOf("|");
-                    if (separatorIndex !== -1) {
-                        // combined string from home - get the logs part
-                        var logsRaw = raw.substring(separatorIndex + 1);
-                        if (logsRaw) {
-                            var parsed = JSON.parse(logsRaw);
-                            if (parsed && parsed.logs) {
-                                existingLogs = parsed.logs;
-                            }
-                        }
-                    } else {
-                        // direct logs string
-                        var parsed = JSON.parse(raw);
-                        if (parsed && parsed.logs) {
-                            existingLogs = parsed.logs;
-                        }
-                    }
-                }
-            } catch (e) { }
-
-            // add new log to array
             existingLogs.push({
                 foodName: foodName,
                 servingSize: servingSize || "0",
@@ -490,13 +477,10 @@
                 time: new Date().toLocaleTimeString()
             });
 
-            // save entire array
-            var data = JSON.stringify({
+            window.AppInventor.setWebViewString(JSON.stringify({
                 type: "save_log",
                 logs: existingLogs
-            });
-
-            window.AppInventor.setWebViewString(data);
+            }));
         }
     </script>
 
