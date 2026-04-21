@@ -474,26 +474,21 @@
 
         function takePhoto() {
             window.AppInventor.setWebViewString("TAKE_PHOTO");
+            setTimeout(function () {
+                clearInterval(imageInterval);
+                startImageInterval();
+            }, 1000);
         }
 
         function pickImage() {
             window.AppInventor.setWebViewString("PICK_IMAGE");
         }
 
+
         function receiveImage(base64) {
             imageBase64 = "data:image/jpeg;base64," + base64;
             document.getElementById("imagePreview").innerHTML =
                 '<img src="' + imageBase64 + '" style="width:100%;height:160px;object-fit:cover;border-radius:14px;">';
-        }
-
-        function checkImage() {
-            var raw = window.AppInventor.getWebViewString();
-            if (raw && raw.indexOf("IMAGE:") === 0) {
-                var base64 = raw.substring(6);
-                imageBase64 = "data:image/jpeg;base64," + base64;
-                document.getElementById("imagePreview").innerHTML =
-                    '<img src="' + imageBase64 + '" style="width:100%;height:160px;object-fit:cover;border-radius:14px;">';
-            }
         }
 
         function saveLog() {
