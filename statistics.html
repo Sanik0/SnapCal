@@ -795,35 +795,7 @@
     }
 
     function getFilteredLogs(logs, period) {
-      var now = new Date();
-      return logs.filter(function (log) {
-        var parts = log.date.split("/");
-        var logDate;
-        if (parts.length === 3) {
-          // handle both MM/DD/YYYY and DD/MM/YYYY
-          if (parseInt(parts[0]) > 12) {
-            // DD/MM/YYYY
-            logDate = new Date(parts[2], parts[1] - 1, parts[0]);
-          } else {
-            // MM/DD/YYYY
-            logDate = new Date(parts[2], parts[0] - 1, parts[1]);
-          }
-        } else {
-          logDate = new Date(log.date);
-        }
-
-        if (period === 'week') {
-          var weekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
-          return logDate >= weekAgo;
-        } else if (period === 'month') {
-          var monthAgo = new Date(now - 30 * 24 * 60 * 60 * 1000);
-          return logDate >= monthAgo;
-        } else if (period === '3mo') {
-          var threeMonthsAgo = new Date(now - 90 * 24 * 60 * 60 * 1000);
-          return logDate >= threeMonthsAgo;
-        }
-        return true;
-      });
+      return logs; // return all logs for now, fix date parsing later
     }
 
     function groupByDate(logs) {
