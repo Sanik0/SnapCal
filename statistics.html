@@ -1,504 +1,985 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>SnapCal Stats</title>
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>SnapCal Stats</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-  body {
-    background: #111111;
-    color: #FFFFFF;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    min-height: 100vh;
-    padding-bottom: 80px;
-  }
+    body {
+      background: #111111;
+      color: #FFFFFF;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      padding-bottom: 80px;
+    }
 
-  .topbar {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 16px 20px 12px;
-  }
-  .topbar .menu-icon { display: flex; flex-direction: column; gap: 5px; cursor: pointer; }
-  .topbar .menu-icon span { display: block; width: 22px; height: 2px; background: #FFFFFF; border-radius: 2px; }
-  .topbar .logo { font-size: 18px; font-weight: 700; color: #FFFFFF; letter-spacing: 0.5px; }
-  .topbar .avatar {
-    width: 34px; height: 34px; border-radius: 50%;
-    background: #333; border: 2px solid #AAFF00;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-weight: 600; color: #AAFF00;
-  }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px 12px;
+    }
 
-  .page-title { font-size: 28px; font-weight: 800; color: #FFFFFF; padding: 4px 20px 16px; }
+    .topbar .menu-icon {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+    }
 
-  /* Period toggle */
-  .period-toggle {
-    display: flex; background: #1A1A1A; border-radius: 12px;
-    margin: 0 20px 20px; padding: 4px; gap: 4px;
-  }
-  .period-btn {
-    flex: 1; padding: 8px 0; border: none; background: none;
-    font-size: 12px; font-weight: 600; color: #555;
-    border-radius: 9px; cursor: pointer; font-family: inherit;
-    letter-spacing: 0.5px;
-  }
-  .period-btn.active { background: #AAFF00; color: #111; }
+    .topbar .menu-icon span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: #FFFFFF;
+      border-radius: 2px;
+    }
 
-  /* Summary row */
-  .summary-grid {
-    display: grid; grid-template-columns: 1fr 1fr 1fr;
-    gap: 10px; padding: 0 20px; margin-bottom: 20px;
-  }
-  .summary-card { background: #1A1A1A; border-radius: 12px; padding: 12px 10px; text-align: center; }
-  .summary-label { font-size: 9px; color: #555; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 5px; }
-  .summary-value { font-size: 18px; font-weight: 700; color: #FFF; }
-  .summary-value.accent { color: #AAFF00; }
-  .summary-sub { font-size: 10px; color: #444; margin-top: 2px; }
+    .topbar .logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: #FFFFFF;
+      letter-spacing: 0.5px;
+    }
 
-  /* Section label */
-  .section-label {
-    font-size: 11px; color: #555; letter-spacing: 1.2px;
-    text-transform: uppercase; padding: 0 20px; margin-bottom: 12px;
-  }
+    .topbar .avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #333;
+      border: 2px solid #AAFF00;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: #AAFF00;
+    }
 
-  /* Bar chart */
-  .bar-chart-wrap { padding: 0 20px; margin-bottom: 24px; }
-  .bar-chart {
-    background: #1A1A1A; border-radius: 14px; padding: 16px 14px 12px;
-  }
-  .bar-chart-header {
-    display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;
-  }
-  .bar-chart-title { font-size: 13px; font-weight: 600; color: #FFF; }
-  .bar-chart-avg { font-size: 11px; color: #555; }
-  .bar-chart-avg span { color: #AAFF00; font-weight: 600; }
-  .bars-row {
-    display: flex; align-items: flex-end; justify-content: space-between;
-    height: 100px; gap: 6px; margin-bottom: 8px;
-  }
-  .bar-col { display: flex; flex-direction: column; align-items: center; flex: 1; gap: 4px; }
-  .bar-track { width: 100%; background: #222; border-radius: 4px; flex: 1; display: flex; align-items: flex-end; }
-  .bar-fill { width: 100%; border-radius: 4px; background: #2A2A2A; transition: height 0.3s; }
-  .bar-fill.active { background: #AAFF00; }
-  .bar-day { font-size: 10px; color: #444; letter-spacing: 0.5px; }
-  .bar-day.active { color: #AAFF00; }
+    .page-title {
+      font-size: 28px;
+      font-weight: 800;
+      color: #FFFFFF;
+      padding: 4px 20px 16px;
+    }
 
-  /* Macro breakdown */
-  .macro-wrap { padding: 0 20px; margin-bottom: 20px; }
-  .macro-card-big { background: #1A1A1A; border-radius: 14px; padding: 16px; }
-  .macro-card-header {
-    display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;
-  }
-  .macro-card-title { font-size: 13px; font-weight: 600; color: #FFF; }
-  .macro-card-kcal { font-size: 11px; color: #555; }
-  .macro-card-kcal span { color: #AAFF00; font-weight: 600; }
+    /* Period toggle */
+    .period-toggle {
+      display: flex;
+      background: #1A1A1A;
+      border-radius: 12px;
+      margin: 0 20px 20px;
+      padding: 4px;
+      gap: 4px;
+    }
 
-  .macro-donut-row { display: flex; align-items: center; gap: 20px; margin-bottom: 16px; }
-  .macro-donut { position: relative; width: 90px; height: 90px; flex-shrink: 0; }
-  .macro-donut-label {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    text-align: center;
-  }
-  .macro-donut-pct { font-size: 16px; font-weight: 700; color: #FFF; line-height: 1; }
-  .macro-donut-sub { font-size: 9px; color: #555; margin-top: 1px; }
+    .period-btn {
+      flex: 1;
+      padding: 8px 0;
+      border: none;
+      background: none;
+      font-size: 12px;
+      font-weight: 600;
+      color: #555;
+      border-radius: 9px;
+      cursor: pointer;
+      font-family: inherit;
+      letter-spacing: 0.5px;
+    }
 
-  .macro-legend { flex: 1; display: flex; flex-direction: column; gap: 8px; }
-  .macro-legend-item { display: flex; align-items: center; justify-content: space-between; }
-  .macro-legend-left { display: flex; align-items: center; gap: 8px; }
-  .macro-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-  .macro-legend-name { font-size: 12px; color: #888; }
-  .macro-legend-val { font-size: 12px; font-weight: 600; color: #FFF; }
+    .period-btn.active {
+      background: #AAFF00;
+      color: #111;
+    }
 
-  .macro-bars-section { display: flex; flex-direction: column; gap: 8px; }
-  .macro-bar-row { display: flex; align-items: center; gap: 10px; }
-  .macro-bar-name { font-size: 11px; color: #666; width: 50px; flex-shrink: 0; }
-  .macro-bar-track { flex: 1; height: 5px; background: #222; border-radius: 3px; overflow: hidden; }
-  .macro-bar-fill-p { height: 100%; border-radius: 3px; }
-  .macro-bar-val { font-size: 11px; color: #555; width: 50px; text-align: right; flex-shrink: 0; }
+    /* Summary row */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      padding: 0 20px;
+      margin-bottom: 20px;
+    }
 
-  /* Streak / highlights */
-  .highlights-grid {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 10px; padding: 0 20px; margin-bottom: 20px;
-  }
-  .highlight-card { background: #1A1A1A; border-radius: 12px; padding: 14px; }
-  .highlight-icon { margin-bottom: 8px; }
-  .highlight-icon svg { width: 20px; height: 20px; }
-  .highlight-value { font-size: 22px; font-weight: 700; color: #FFF; margin-bottom: 2px; }
-  .highlight-value.accent { color: #AAFF00; }
-  .highlight-label { font-size: 10px; color: #555; letter-spacing: 0.5px; }
+    .summary-card {
+      background: #1A1A1A;
+      border-radius: 12px;
+      padding: 12px 10px;
+      text-align: center;
+    }
 
-  /* Top foods */
-  .top-foods-wrap { padding: 0 20px; margin-bottom: 20px; }
-  .top-foods-card { background: #1A1A1A; border-radius: 14px; overflow: hidden; }
-  .top-food-item {
-    display: flex; align-items: center; gap: 12px;
-    padding: 12px 14px; border-bottom: 1px solid #222;
-  }
-  .top-food-item:last-child { border-bottom: none; }
-  .top-food-rank { font-size: 13px; font-weight: 700; color: #333; width: 20px; flex-shrink: 0; text-align: center; }
-  .top-food-rank.top { color: #AAFF00; }
-  .top-food-img {
-    width: 38px; height: 38px; border-radius: 8px; background: #222;
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  }
-  .top-food-img svg { width: 18px; height: 18px; }
-  .top-food-info { flex: 1; min-width: 0; }
-  .top-food-name { font-size: 13px; font-weight: 600; color: #FFF; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .top-food-count { font-size: 11px; color: #555; }
-  .top-food-kcal { font-size: 13px; font-weight: 600; color: #AAFF00; flex-shrink: 0; }
+    .summary-label {
+      font-size: 9px;
+      color: #555;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
 
-  /* Bottom Nav */
-  .bottom-nav {
-    position: fixed; bottom: 0; left: 0; right: 0;
-    background: #181818; border-top: 1px solid #222;
-    display: flex; justify-content: space-around;
-    padding: 10px 0 16px;
-  }
-  .nav-item {
-    display: flex; flex-direction: column; align-items: center;
-    gap: 4px; cursor: pointer; flex: 1; text-decoration: none;
-  }
-  .nav-item svg { width: 22px; height: 22px; }
-  .nav-item span { font-size: 10px; color: #555; letter-spacing: 0.5px; text-transform: uppercase; }
-  .nav-item.active span { color: #AAFF00; }
-  .nav-scan-btn {
-    width: 52px; height: 52px; border-radius: 50%;
-    background: #AAFF00; display: flex; align-items: center;
-    justify-content: center; margin-top: -20px;
-    box-shadow: 0 4px 16px rgba(170,255,0,0.3); cursor: pointer;
-  }
-  .nav-scan-btn svg { width: 24px; height: 24px; color: #111; }
-</style>
+    .summary-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: #FFF;
+    }
+
+    .summary-value.accent {
+      color: #AAFF00;
+    }
+
+    .summary-sub {
+      font-size: 10px;
+      color: #444;
+      margin-top: 2px;
+    }
+
+    /* Section label */
+    .section-label {
+      font-size: 11px;
+      color: #555;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      padding: 0 20px;
+      margin-bottom: 12px;
+    }
+
+    /* Bar chart */
+    .bar-chart-wrap {
+      padding: 0 20px;
+      margin-bottom: 24px;
+    }
+
+    .bar-chart {
+      background: #1A1A1A;
+      border-radius: 14px;
+      padding: 16px 14px 12px;
+    }
+
+    .bar-chart-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .bar-chart-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #FFF;
+    }
+
+    .bar-chart-avg {
+      font-size: 11px;
+      color: #555;
+    }
+
+    .bar-chart-avg span {
+      color: #AAFF00;
+      font-weight: 600;
+    }
+
+    .bars-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      height: 100px;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .bar-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      gap: 4px;
+    }
+
+    .bar-track {
+      width: 100%;
+      background: #222;
+      border-radius: 4px;
+      flex: 1;
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .bar-fill {
+      width: 100%;
+      border-radius: 4px;
+      background: #2A2A2A;
+      transition: height 0.3s;
+    }
+
+    .bar-fill.active {
+      background: #AAFF00;
+    }
+
+    .bar-day {
+      font-size: 10px;
+      color: #444;
+      letter-spacing: 0.5px;
+    }
+
+    .bar-day.active {
+      color: #AAFF00;
+    }
+
+    /* Macro breakdown */
+    .macro-wrap {
+      padding: 0 20px;
+      margin-bottom: 20px;
+    }
+
+    .macro-card-big {
+      background: #1A1A1A;
+      border-radius: 14px;
+      padding: 16px;
+    }
+
+    .macro-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .macro-card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #FFF;
+    }
+
+    .macro-card-kcal {
+      font-size: 11px;
+      color: #555;
+    }
+
+    .macro-card-kcal span {
+      color: #AAFF00;
+      font-weight: 600;
+    }
+
+    .macro-donut-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 16px;
+    }
+
+    .macro-donut {
+      position: relative;
+      width: 90px;
+      height: 90px;
+      flex-shrink: 0;
+    }
+
+    .macro-donut-label {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .macro-donut-pct {
+      font-size: 16px;
+      font-weight: 700;
+      color: #FFF;
+      line-height: 1;
+    }
+
+    .macro-donut-sub {
+      font-size: 9px;
+      color: #555;
+      margin-top: 1px;
+    }
+
+    .macro-legend {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .macro-legend-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .macro-legend-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .macro-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .macro-legend-name {
+      font-size: 12px;
+      color: #888;
+    }
+
+    .macro-legend-val {
+      font-size: 12px;
+      font-weight: 600;
+      color: #FFF;
+    }
+
+    .macro-bars-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .macro-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .macro-bar-name {
+      font-size: 11px;
+      color: #666;
+      width: 50px;
+      flex-shrink: 0;
+    }
+
+    .macro-bar-track {
+      flex: 1;
+      height: 5px;
+      background: #222;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .macro-bar-fill-p {
+      height: 100%;
+      border-radius: 3px;
+    }
+
+    .macro-bar-val {
+      font-size: 11px;
+      color: #555;
+      width: 50px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    /* Streak / highlights */
+    .highlights-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 0 20px;
+      margin-bottom: 20px;
+    }
+
+    .highlight-card {
+      background: #1A1A1A;
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .highlight-icon {
+      margin-bottom: 8px;
+    }
+
+    .highlight-icon svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .highlight-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: #FFF;
+      margin-bottom: 2px;
+    }
+
+    .highlight-value.accent {
+      color: #AAFF00;
+    }
+
+    .highlight-label {
+      font-size: 10px;
+      color: #555;
+      letter-spacing: 0.5px;
+    }
+
+    /* Top foods */
+    .top-foods-wrap {
+      padding: 0 20px;
+      margin-bottom: 20px;
+    }
+
+    .top-foods-card {
+      background: #1A1A1A;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .top-food-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-bottom: 1px solid #222;
+    }
+
+    .top-food-item:last-child {
+      border-bottom: none;
+    }
+
+    .top-food-rank {
+      font-size: 13px;
+      font-weight: 700;
+      color: #333;
+      width: 20px;
+      flex-shrink: 0;
+      text-align: center;
+    }
+
+    .top-food-rank.top {
+      color: #AAFF00;
+    }
+
+    .top-food-img {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background: #222;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .top-food-img svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .top-food-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .top-food-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #FFF;
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .top-food-count {
+      font-size: 11px;
+      color: #555;
+    }
+
+    .top-food-kcal {
+      font-size: 13px;
+      font-weight: 600;
+      color: #AAFF00;
+      flex-shrink: 0;
+    }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #181818;
+      border-top: 1px solid #222;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0 16px;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      flex: 1;
+      text-decoration: none;
+    }
+
+    .nav-item svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .nav-item span {
+      font-size: 10px;
+      color: #555;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .nav-item.active span {
+      color: #AAFF00;
+    }
+
+    .nav-scan-btn {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: #AAFF00;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: -20px;
+      box-shadow: 0 4px 16px rgba(170, 255, 0, 0.3);
+      cursor: pointer;
+    }
+
+    .nav-scan-btn svg {
+      width: 24px;
+      height: 24px;
+      color: #111;
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="topbar">
-  <div class="menu-icon"><span></span><span></span><span></span></div>
-  <div class="logo">SnapCal</div>
-  <div class="avatar">U</div>
-</div>
-
-<div class="page-title">Your Stats</div>
-
-<!-- Period Toggle -->
-<div class="period-toggle">
-  <button class="period-btn" onclick="setPeriod('week', this)">Week</button>
-  <button class="period-btn active" onclick="setPeriod('month', this)">Month</button>
-  <button class="period-btn" onclick="setPeriod('3mo', this)">3 Months</button>
-</div>
-
-<!-- Summary -->
-<div class="summary-grid">
-  <div class="summary-card">
-    <div class="summary-label">Avg / Day</div>
-    <div class="summary-value accent">1,840</div>
-    <div class="summary-sub">kcal</div>
+  <div class="topbar">
+    <div class="menu-icon"><span></span><span></span><span></span></div>
+    <div class="logo">SnapCal</div>
+    <div class="avatar">U</div>
   </div>
-  <div class="summary-card">
-    <div class="summary-label">Meals</div>
-    <div class="summary-value">68</div>
-    <div class="summary-sub">logged</div>
-  </div>
-  <div class="summary-card">
-    <div class="summary-label">Best Day</div>
-    <div class="summary-value">Oct 18</div>
-    <div class="summary-sub">on target</div>
-  </div>
-</div>
 
-<!-- Calorie Bar Chart -->
-<div class="bar-chart-wrap">
-  <div class="bar-chart">
-    <div class="bar-chart-header">
-      <span class="bar-chart-title">Calorie intake</span>
-      <span class="bar-chart-avg">Avg <span>1,840 kcal</span></span>
+  <div class="page-title">Your Stats</div>
+
+  <!-- Period Toggle -->
+  <div class="period-toggle">
+    <button class="period-btn" onclick="setPeriod('week', this)">Week</button>
+    <button class="period-btn active" onclick="setPeriod('month', this)">Month</button>
+    <button class="period-btn" onclick="setPeriod('3mo', this)">3 Months</button>
+  </div>
+
+  <!-- Summary -->
+  <div class="summary-grid">
+    <div class="summary-card">
+      <div class="summary-label">Avg / Day</div>
+      <div class="summary-value accent" id="avgKcal">0</div>
+      <div class="summary-sub">kcal</div>
     </div>
-    <div class="bars-row" id="barsRow"></div>
-    <div style="display:flex;justify-content:space-between;padding:0 2px;" id="barsLabels"></div>
-  </div>
-</div>
-
-<!-- Macro Breakdown -->
-<div class="section-label">Macro breakdown</div>
-<div class="macro-wrap">
-  <div class="macro-card-big">
-    <div class="macro-card-header">
-      <span class="macro-card-title">This month</span>
-      <span class="macro-card-kcal">Avg <span>1,840 kcal</span> / day</span>
+    <div class="summary-card">
+      <div class="summary-label">Meals</div>
+      <div class="summary-value" id="totalMeals">0</div>
+      <div class="summary-sub">logged</div>
     </div>
-    <div class="macro-donut-row">
-      <div class="macro-donut">
-        <svg width="90" height="90" viewBox="0 0 90 90">
-          <circle cx="45" cy="45" r="36" fill="none" stroke="#222" stroke-width="10"/>
-          <!-- Protein: 30% -->
-          <circle cx="45" cy="45" r="36" fill="none" stroke="#AAFF00" stroke-width="10"
-            stroke-dasharray="68 158" stroke-dashoffset="0"
-            transform="rotate(-90 45 45)"/>
-          <!-- Carbs: 48% -->
-          <circle cx="45" cy="45" r="36" fill="none" stroke="#2A5A2A" stroke-width="10"
-            stroke-dasharray="109 117" stroke-dashoffset="-68"
-            transform="rotate(-90 45 45)"/>
-          <!-- Fat: 22% -->
-          <circle cx="45" cy="45" r="36" fill="none" stroke="#1E3A1E" stroke-width="10"
-            stroke-dasharray="49 177" stroke-dashoffset="-177"
-            transform="rotate(-90 45 45)"/>
-        </svg>
-        <div class="macro-donut-label">
-          <div class="macro-donut-pct">100%</div>
-          <div class="macro-donut-sub">macro</div>
-        </div>
+    <div class="summary-card">
+      <div class="summary-label">Best Day</div>
+      <div class="summary-value" id="bestDay">--</div>
+      <div class="summary-sub">on target</div>
+    </div>
+  </div>
+
+  <!-- Calorie Bar Chart -->
+  <div class="bar-chart-wrap">
+    <div class="bar-chart">
+      <div class="bar-chart-header">
+        <span class="bar-chart-title">Calorie intake</span>
+        <span class="bar-chart-avg">Avg <span>1,840 kcal</span></span>
       </div>
-      <div class="macro-legend">
-        <div class="macro-legend-item">
-          <div class="macro-legend-left">
-            <div class="macro-dot" style="background:#AAFF00;"></div>
-            <span class="macro-legend-name">Protein</span>
+      <div class="bars-row" id="barsRow"></div>
+      <div style="display:flex;justify-content:space-between;padding:0 2px;" id="barsLabels"></div>
+    </div>
+  </div>
+
+  <!-- Macro Breakdown -->
+  <div class="section-label">Macro breakdown</div>
+  <div class="macro-wrap">
+    <div class="macro-card-big">
+      <div class="macro-card-header">
+        <span class="macro-card-title">This month</span>
+        <span class="macro-card-kcal" id="macroAvgLabel">Avg 0 kcal / day</span>
+      </div>
+      <div class="macro-donut-row">
+        <div class="macro-donut">
+          <svg width="90" height="90" viewBox="0 0 90 90">
+            <circle cx="45" cy="45" r="36" fill="none" stroke="#222" stroke-width="10" />
+            <!-- Protein: 30% -->
+            <circle id="proteinArc" cx="45" cy="45" r="36" fill="none" stroke="#AAFF00" stroke-width="10"
+              stroke-dasharray="0 226" stroke-dashoffset="0" transform="rotate(-90 45 45)" />
+            <!-- Carbs: 48% -->
+            <circle id="carbsArc" cx="45" cy="45" r="36" fill="none" stroke="#2A5A2A" stroke-width="10"
+              stroke-dasharray="0 226" stroke-dashoffset="0" transform="rotate(-90 45 45)" />
+            <!-- Fat: 22% -->
+            <circle id="fatsArc" cx="45" cy="45" r="36" fill="none" stroke="#1E3A1E" stroke-width="10"
+              stroke-dasharray="0 226" stroke-dashoffset="0" transform="rotate(-90 45 45)" />
+          </svg>
+          <div class="macro-donut-label">
+            <div class="macro-donut-pct">100%</div>
+            <div class="macro-donut-sub">macro</div>
           </div>
-          <span class="macro-legend-val">30%</span>
         </div>
-        <div class="macro-legend-item">
-          <div class="macro-legend-left">
-            <div class="macro-dot" style="background:#2A7A2A;"></div>
-            <span class="macro-legend-name">Carbs</span>
+        <div class="macro-legend">
+          <div class="macro-legend-item">
+            <div class="macro-legend-left">
+              <div class="macro-dot" style="background:#AAFF00;"></div>
+              <span class="macro-legend-name">Protein</span>
+            </div>
+            <span class="macro-legend-val" id="proteinPct">0%</span>
           </div>
-          <span class="macro-legend-val">48%</span>
-        </div>
-        <div class="macro-legend-item">
-          <div class="macro-legend-left">
-            <div class="macro-dot" style="background:#1A4A1A;"></div>
-            <span class="macro-legend-name">Fats</span>
+          <div class="macro-legend-item">
+            <div class="macro-legend-left">
+              <div class="macro-dot" style="background:#2A7A2A;"></div>
+              <span class="macro-legend-name">Carbs</span>
+            </div>
+            <span class="macro-legend-val" id="carbsPct">0%</span>
           </div>
-          <span class="macro-legend-val">22%</span>
+          <div class="macro-legend-item">
+            <div class="macro-legend-left">
+              <div class="macro-dot" style="background:#1A4A1A;"></div>
+              <span class="macro-legend-name">Fats</span>
+            </div>
+            <span class="macro-legend-val" id="fatsPct">0%</span>
+          </div>
+        </div>
+      </div>
+      <div class="macro-bars-section">
+        <div class="macro-bar-row">
+          <span class="macro-bar-name">Protein</span>
+          <div class="macro-bar-track">
+            <div class="macro-bar-fill-p" id="proteinBar" style="width:0%;background:#AAFF00;"></div>
+          </div>
+          <span class="macro-bar-val" id="proteinBarVal">0g / 180g</span>
+        </div>
+        <div class="macro-bar-row">
+          <span class="macro-bar-name">Carbs</span>
+          <div class="macro-bar-track">
+            <div class="macro-bar-fill-p" id="carbsBar" style="width:0%;background:#2A7A2A;"></div>
+          </div>
+          <span class="macro-bar-val" id="carbsBarVal">0g / 270g</span>
+        </div>
+        <div class="macro-bar-row">
+          <span class="macro-bar-name">Fats</span>
+          <div class="macro-bar-track">
+            <div class="macro-bar-fill-p" id="fatsBar" style="width:0%;background:#1A4A1A;"></div>
+          </div>
+          <span class="macro-bar-val" id="fatsBarVal">0g / 110g</span>
         </div>
       </div>
     </div>
-    <div class="macro-bars-section">
-      <div class="macro-bar-row">
-        <span class="macro-bar-name">Protein</span>
-        <div class="macro-bar-track"><div class="macro-bar-fill-p" style="width:62%;background:#AAFF00;"></div></div>
-        <span class="macro-bar-val">118g / 180g</span>
-      </div>
-      <div class="macro-bar-row">
-        <span class="macro-bar-name">Carbs</span>
-        <div class="macro-bar-track"><div class="macro-bar-fill-p" style="width:80%;background:#2A7A2A;"></div></div>
-        <span class="macro-bar-val">216g / 270g</span>
-      </div>
-      <div class="macro-bar-row">
-        <span class="macro-bar-name">Fats</span>
-        <div class="macro-bar-track"><div class="macro-bar-fill-p" style="width:40%;background:#1A4A1A;"></div></div>
-        <span class="macro-bar-val">44g / 110g</span>
-      </div>
-    </div>
   </div>
-</div>
 
-<!-- Highlights -->
-<div class="section-label">Highlights</div>
-<div class="highlights-grid">
-  <div class="highlight-card">
-    <div class="highlight-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#AAFF00" stroke-width="2">
-        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-      </svg>
-    </div>
-    <div class="highlight-value accent">12</div>
-    <div class="highlight-label">Day streak</div>
-  </div>
-  <div class="highlight-card">
-    <div class="highlight-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2">
-        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-      </svg>
-    </div>
-    <div class="highlight-value">2.4</div>
-    <div class="highlight-label">Avg meals / day</div>
-  </div>
-  <div class="highlight-card">
-    <div class="highlight-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2">
-        <circle cx="12" cy="12" r="10"/>
-        <path d="M12 6v6l4 2"/>
-      </svg>
-    </div>
-    <div class="highlight-value">08:12</div>
-    <div class="highlight-label">Avg first meal</div>
-  </div>
-  <div class="highlight-card">
-    <div class="highlight-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2">
-        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-      </svg>
-    </div>
-    <div class="highlight-value">18</div>
-    <div class="highlight-label">Goals hit</div>
-  </div>
-</div>
-
-<!-- Top Foods -->
-<div class="section-label">Most logged foods</div>
-<div class="top-foods-wrap">
-  <div class="top-foods-card">
-    <div class="top-food-item">
-      <span class="top-food-rank top">1</span>
-      <div class="top-food-img">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#2A3A24" stroke-width="1.2">
-          <rect x="3" y="3" width="18" height="18" rx="3"/>
-          <circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>
+  <!-- Highlights -->
+  <div class="section-label">Highlights</div>
+  <div class="highlights-grid">
+    <div class="highlight-card">
+      <div class="highlight-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#AAFF00" stroke-width="2">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
         </svg>
       </div>
-      <div class="top-food-info">
-        <div class="top-food-name">Grilled Chicken Salad</div>
-        <div class="top-food-count">8 times this month</div>
-      </div>
-      <span class="top-food-kcal">420 kcal</span>
+      <div class="highlight-value accent" id="streakVal">0</div>
+      <div class="highlight-label">Day streak</div>
     </div>
-    <div class="top-food-item">
-      <span class="top-food-rank top">2</span>
-      <div class="top-food-img">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#2A2A1E" stroke-width="1.2">
-          <rect x="3" y="3" width="18" height="18" rx="3"/>
-          <circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>
+    <div class="highlight-card">
+      <div class="highlight-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2">
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
         </svg>
       </div>
-      <div class="top-food-info">
-        <div class="top-food-name">Berry Oat Porridge</div>
-        <div class="top-food-count">6 times this month</div>
-      </div>
-      <span class="top-food-kcal">310 kcal</span>
+      <div class="highlight-value" id="avgMealsVal">0</div>
+      <div class="highlight-label">Avg meals / day</div>
     </div>
-    <div class="top-food-item">
-      <span class="top-food-rank">3</span>
-      <div class="top-food-img">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#1E2A1E" stroke-width="1.2">
-          <rect x="3" y="3" width="18" height="18" rx="3"/>
-          <circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>
+    <div class="highlight-card">
+      <div class="highlight-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M12 6v6l4 2" />
         </svg>
       </div>
-      <div class="top-food-info">
-        <div class="top-food-name">Pesto Pasta Carbonara</div>
-        <div class="top-food-count">4 times this month</div>
+      <div class="highlight-value" id="firstMealVal">--</div>
+      <div class="highlight-label">Avg first meal</div>
+    </div>
+    <div class="highlight-card">
+      <div class="highlight-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2">
+          <path
+            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+        </svg>
       </div>
-      <span class="top-food-kcal">840 kcal</span>
+      <div class="highlight-value" id="goalsHitVal">0</div>
+      <div class="highlight-label">Goals hit</div>
     </div>
   </div>
-</div>
 
-<!-- Bottom Nav -->
-<div class="bottom-nav">
-  <a class="nav-item" href="file:///android_asset/home.html" style="text-decoration:none;">
-    <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8">
-      <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/>
-      <path d="M9 21V12h6v9"/>
-    </svg>
-    <span>Home</span>
-  </a>
-  <a class="nav-item" onclick="navTo('LOGS')" style="text-decoration:none;">
-    <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8">
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-      <polyline points="14 2 14 8 20 8"/>
-      <line x1="16" y1="13" x2="8" y2="13"/>
-      <line x1="16" y1="17" x2="8" y2="17"/>
-      <polyline points="10 9 9 9 8 9"/>
-    </svg>
-    <span>Logs</span>
-  </a>
-  <a class="nav-item" href="file:///android_asset/scan.html" style="text-decoration:none;">
-    <div class="nav-scan-btn">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.2">
-        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-        <circle cx="12" cy="13" r="4"/>
+  <!-- Bottom Nav -->
+  <div class="bottom-nav">
+    <a class="nav-item" onclick="navTo('HOME')" style="text-decoration:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8">
+        <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z" />
+        <path d="M9 21V12h6v9" />
       </svg>
-    </div>
-    <span>Scan</span>
-  </a>
-  <a class="nav-item active" href="file:///android_asset/statistics.html" style="text-decoration:none;">
-    <svg viewBox="0 0 24 24" fill="none" stroke="#AAFF00" stroke-width="1.8">
-      <rect x="3" y="3" width="7" height="7" rx="1"/>
-      <rect x="14" y="3" width="7" height="7" rx="1"/>
-      <rect x="14" y="14" width="7" height="7" rx="1"/>
-      <rect x="3" y="14" width="7" height="7" rx="1"/>
-    </svg>
-    <span>Stats</span>
-  </a>
-  <a class="nav-item" href="file:///android_asset/profile.html" style="text-decoration:none;">
-    <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8">
-      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-      <circle cx="12" cy="7" r="4"/>
-    </svg>
-    <span>Profile</span>
-  </a>
-</div>
+      <span>Home</span>
+    </a>
+    <a class="nav-item" onclick="navTo('LOGS')" style="text-decoration:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <polyline points="14 2 14 8 20 8" />
+        <line x1="16" y1="13" x2="8" y2="13" />
+        <line x1="16" y1="17" x2="8" y2="17" />
+        <polyline points="10 9 9 9 8 9" />
+      </svg>
+      <span>Logs</span>
+    </a>
+    <a class="nav-item" href="file:///android_asset/scan.html" style="text-decoration:none;">
+      <div class="nav-scan-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.2">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+          <circle cx="12" cy="13" r="4" />
+        </svg>
+      </div>
+      <span>Scan</span>
+    </a>
+    <a class="nav-item active" onclick="navTo('STATISTICS')" style="text-decoration:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#AAFF00" stroke-width="1.8">
+        <rect x="3" y="3" width="7" height="7" rx="1" />
+        <rect x="14" y="3" width="7" height="7" rx="1" />
+        <rect x="14" y="14" width="7" height="7" rx="1" />
+        <rect x="3" y="14" width="7" height="7" rx="1" />
+      </svg>
+      <span>Stats</span>
+    </a>
+    <a class="nav-item" onclick="navTo('PROFILE')" style="text-decoration:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+        <circle cx="12" cy="7" r="4" />
+      </svg>
+      <span>Profile</span>
+    </a>
+  </div>
 
-<script>
-  var datasets = {
-    week: {
-      labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
-      values: [1620, 2100, 1480, 1950, 1720, 2300, 1840],
-      active: 6
-    },
-    month: {
-      labels: ['W1','W2','W3','W4'],
-      values: [1750, 1920, 1680, 2050],
-      active: 3
-    },
-    '3mo': {
-      labels: ['Aug','Sep','Oct'],
-      values: [1900, 1750, 1840],
-      active: 2
+  <script>
+    function navTo(screen) {
+      if (window.AppInventor) {
+        window.AppInventor.setWebViewString('NAV:' + screen.toUpperCase());
+      }
     }
-  };
 
-  var currentPeriod = 'month';
+    var allLogs = [];
+    var currentPeriod = 'month';
 
-  function renderBars(period) {
-    var data = datasets[period];
-    var max = Math.max.apply(null, data.values);
-    var row = document.getElementById('barsRow');
-    var labels = document.getElementById('barsLabels');
-    row.innerHTML = '';
-    labels.innerHTML = '';
-    data.values.forEach(function(v, i) {
-      var pct = Math.round((v / max) * 100);
-      var isActive = i === data.active;
-      var col = document.createElement('div');
-      col.className = 'bar-col';
-      col.innerHTML =
-        '<div class="bar-track">' +
-          '<div class="bar-fill' + (isActive ? ' active' : '') + '" style="height:' + pct + '%"></div>' +
-        '</div>';
-      row.appendChild(col);
+    function setPeriod(period, btn) {
+      currentPeriod = period;
+      document.querySelectorAll('.period-btn').forEach(function (b) {
+        b.classList.remove('active');
+      });
+      btn.classList.add('active');
+      renderStats();
+    }
 
-      var lbl = document.createElement('span');
-      lbl.style.cssText = 'font-size:10px;color:' + (isActive ? '#AAFF00' : '#444') + ';flex:1;text-align:center;';
-      lbl.textContent = data.labels[i];
-      labels.appendChild(lbl);
+    function getFilteredLogs(logs, period) {
+      var now = new Date();
+      return logs.filter(function (log) {
+        var logDate = new Date(log.date);
+        if (period === 'week') {
+          var weekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
+          return logDate >= weekAgo;
+        } else if (period === 'month') {
+          var monthAgo = new Date(now - 30 * 24 * 60 * 60 * 1000);
+          return logDate >= monthAgo;
+        } else if (period === '3mo') {
+          var threeMonthsAgo = new Date(now - 90 * 24 * 60 * 60 * 1000);
+          return logDate >= threeMonthsAgo;
+        }
+        return true;
+      });
+    }
+
+    function groupByDate(logs) {
+      var grouped = {};
+      logs.forEach(function (log) {
+        if (!grouped[log.date]) grouped[log.date] = [];
+        grouped[log.date].push(log);
+      });
+      return grouped;
+    }
+
+    function renderStats() {
+      var filtered = getFilteredLogs(allLogs, currentPeriod);
+      if (filtered.length === 0) return;
+
+      var grouped = groupByDate(filtered);
+      var dates = Object.keys(grouped);
+      var totalKcal = 0;
+      var totalProtein = 0;
+      var totalCarbs = 0;
+      var totalFats = 0;
+      var bestDay = null;
+      var bestDayKcal = 0;
+
+      dates.forEach(function (date) {
+        var dayKcal = 0;
+        grouped[date].forEach(function (log) {
+          var k = parseFloat(log.calories) || 0;
+          var p = parseFloat(log.protein) || 0;
+          var c = parseFloat(log.carbs) || 0;
+          var f = parseFloat(log.fat) || 0;
+          totalKcal += k;
+          totalProtein += p;
+          totalCarbs += c;
+          totalFats += f;
+          dayKcal += k;
+        });
+        if (dayKcal > bestDayKcal) {
+          bestDayKcal = dayKcal;
+          bestDay = date;
+        }
+      });
+
+      var avgKcal = Math.round(totalKcal / dates.length);
+      var avgProtein = Math.round(totalProtein / dates.length);
+      var avgCarbs = Math.round(totalCarbs / dates.length);
+      var avgFats = Math.round(totalFats / dates.length);
+      var totalMacro = totalProtein + totalCarbs + totalFats;
+      var proteinPct = totalMacro > 0 ? Math.round((totalProtein / totalMacro) * 100) : 0;
+      var carbsPct = totalMacro > 0 ? Math.round((totalCarbs / totalMacro) * 100) : 0;
+      var fatsPct = totalMacro > 0 ? Math.round((totalFats / totalMacro) * 100) : 0;
+
+      // summary cards
+      document.getElementById("avgKcal").innerText = avgKcal.toLocaleString();
+      document.getElementById("totalMeals").innerText = filtered.length;
+      document.getElementById("bestDay").innerText = bestDay || "--";
+
+      // bar chart avg label
+      document.getElementById("barAvgLabel").innerText = avgKcal.toLocaleString() + " kcal";
+      document.getElementById("macroAvgLabel").innerText = "Avg " + avgKcal.toLocaleString() + " kcal / day";
+
+      // bar chart
+      var barsRow = document.getElementById("barsRow");
+      var barsLabels = document.getElementById("barsLabels");
+      barsRow.innerHTML = "";
+      barsLabels.innerHTML = "";
+
+      var maxKcal = 0;
+      dates.forEach(function (date) {
+        var dayKcal = 0;
+        grouped[date].forEach(function (log) { dayKcal += parseFloat(log.calories) || 0; });
+        if (dayKcal > maxKcal) maxKcal = dayKcal;
+      });
+
+      var showDates = dates.slice(-7);
+      showDates.forEach(function (date) {
+        var dayKcal = 0;
+        grouped[date].forEach(function (log) { dayKcal += parseFloat(log.calories) || 0; });
+        var pct = maxKcal > 0 ? Math.round((dayKcal / maxKcal) * 100) : 0;
+        var shortDate = date.split("/").slice(0, 2).join("/");
+
+        barsRow.innerHTML += '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;">' +
+          '<div style="font-size:10px;color:#555;">' + dayKcal.toLocaleString() + '</div>' +
+          '<div style="width:100%;background:#222;border-radius:4px;height:80px;display:flex;align-items:flex-end;">' +
+          '<div style="width:100%;background:#AAFF00;border-radius:4px;height:' + pct + '%;"></div>' +
+          '</div></div>';
+
+        barsLabels.innerHTML += '<div style="flex:1;text-align:center;font-size:9px;color:#555;">' + shortDate + '</div>';
+      });
+
+      // macro donut
+      var circumference = 226;
+      var proteinDash = Math.round((proteinPct / 100) * circumference);
+      var carbsDash = Math.round((carbsPct / 100) * circumference);
+      var fatsDash = Math.round((fatsPct / 100) * circumference);
+
+      document.getElementById("proteinArc").setAttribute("stroke-dasharray", proteinDash + " " + (circumference - proteinDash));
+      document.getElementById("carbsArc").setAttribute("stroke-dasharray", carbsDash + " " + (circumference - carbsDash));
+      document.getElementById("carbsArc").setAttribute("stroke-dashoffset", "-" + proteinDash);
+      document.getElementById("fatsArc").setAttribute("stroke-dasharray", fatsDash + " " + (circumference - fatsDash));
+      document.getElementById("fatsArc").setAttribute("stroke-dashoffset", "-" + (proteinDash + carbsDash));
+
+      document.getElementById("proteinPct").innerText = proteinPct + "%";
+      document.getElementById("carbsPct").innerText = carbsPct + "%";
+      document.getElementById("fatsPct").innerText = fatsPct + "%";
+
+      document.getElementById("proteinBar").style.width = Math.min((avgProtein / 180) * 100, 100) + "%";
+      document.getElementById("carbsBar").style.width = Math.min((avgCarbs / 270) * 100, 100) + "%";
+      document.getElementById("fatsBar").style.width = Math.min((avgFats / 110) * 100, 100) + "%";
+
+      document.getElementById("proteinBarVal").innerText = avgProtein + "g / 180g";
+      document.getElementById("carbsBarVal").innerText = avgCarbs + "g / 270g";
+      document.getElementById("fatsBarVal").innerText = avgFats + "g / 110g";
+
+      // highlights
+      var streak = calculateStreak(allLogs);
+      var avgMealsDay = (filtered.length / Math.max(dates.length, 1)).toFixed(1);
+      var firstMealAvg = calculateAvgFirstMeal(grouped);
+
+      document.getElementById("streakVal").innerText = streak;
+      document.getElementById("avgMealsVal").innerText = avgMealsDay;
+      document.getElementById("firstMealVal").innerText = firstMealAvg;
+      document.getElementById("goalsHitVal").innerText = dates.length;
+    }
+
+    function calculateStreak(logs) {
+      if (!logs.length) return 0;
+      var grouped = groupByDate(logs);
+      var dates = Object.keys(grouped).sort();
+      var streak = 0;
+      var today = new Date().toLocaleDateString();
+      var check = new Date();
+
+      while (true) {
+        var dateStr = check.toLocaleDateString();
+        if (grouped[dateStr]) {
+          streak++;
+          check.setDate(check.getDate() - 1);
+        } else {
+          break;
+        }
+      }
+      return streak;
+    }
+
+    function calculateAvgFirstMeal(grouped) {
+      var times = [];
+      Object.keys(grouped).forEach(function (date) {
+        var dayLogs = grouped[date].sort(function (a, b) {
+          return a.time.localeCompare(b.time);
+        });
+        if (dayLogs[0] && dayLogs[0].time) {
+          times.push(dayLogs[0].time);
+        }
+      });
+      if (!times.length) return "--";
+      return times[0];
+    }
+
+    window.addEventListener("load", function () {
+      try {
+        var raw = window.AppInventor.getWebViewString();
+        if (!raw) return;
+        var data = JSON.parse(raw);
+        if (data.logs) {
+          allLogs = data.logs;
+          renderStats();
+        }
+      } catch (e) { }
     });
-  }
-
-  function setPeriod(period, btn) {
-    currentPeriod = period;
-    document.querySelectorAll('.period-btn').forEach(function(b) { b.classList.remove('active'); });
-    btn.classList.add('active');
-    renderBars(period);
-  }
-
-  function updateData(data) {
-    if (data.stats) {
-      // App Inventor can push stats data here
-    }
-  }
-
-  window.addEventListener('message', function(e) {
-    try { updateData(JSON.parse(e.data)); } catch(err) {}
-  });
-
-  document.addEventListener('DOMContentLoaded', function() {
-    renderBars(currentPeriod);
-    if (window.AppInventorData) {
-      try { updateData(JSON.parse(window.AppInventorData)); } catch(err) {}
-    }
-  });
-</script>
+  </script>
 </body>
+
 </html>
