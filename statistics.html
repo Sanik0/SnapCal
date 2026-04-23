@@ -795,7 +795,31 @@
     }
 
     function getFilteredLogs(logs, period) {
-      return logs; // return all logs for now, fix date parsing later
+      var now = new Date();
+      return logs.filter(function (log) {
+        var parts = log.date.split("/");
+        var logDate;
+        if (parts.length === 3) {
+          if (parseInt(parts[0]) > 12) {
+            // DD/MM/YYYY
+            logDate = new Date(parts[2], parts[1] - 1, parts[0]);
+          } else {
+            // MM/DD/YYYY
+            logDate = new Date(parts[2], parts[0] - 1, parts[1]);
+          }
+        } else {
+          logDate = new Date(log.date);
+        }
+
+        if (period === 'week') {
+          return logDate >= new Date(now - 7 * 24 * 60 * 60 * 1000);
+        } else if (period === 'month') {
+          return logDate >= new Date(now - 30 * 24 * 60 * 60 * 1000);
+        } else if (period === '3mo') {
+          return logDate >= new Date(now - 90 * 24 * 60 * 60 * 1000);
+        }
+        return true;
+      });
     }
 
     function groupByDate(logs) {
@@ -809,7 +833,6 @@
 
     function renderStats() {
       var filtered = getFilteredLogs(allLogs, currentPeriod);
-      alert("FILTERED: " + filtered.length + " ALLLOGS: " + allLogs.length);
       if (filtered.length === 0) return;
 
       var grouped = groupByDate(filtered);
