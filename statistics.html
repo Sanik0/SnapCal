@@ -601,7 +601,7 @@
     <div class="bar-chart">
       <div class="bar-chart-header">
         <span class="bar-chart-title">Calorie intake</span>
-        <span class="bar-chart-avg">Avg <span>1,840 kcal</span></span>
+        <span class="bar-chart-avg">Avg <span id="barAvgLabel">0 kcal</span></span>
       </div>
       <div class="bars-row" id="barsRow"></div>
       <div style="display:flex;justify-content:space-between;padding:0 2px;" id="barsLabels"></div>
@@ -809,6 +809,7 @@
 
     function renderStats() {
       var filtered = getFilteredLogs(allLogs, currentPeriod);
+      alert("FILTERED: " + filtered.length + " ALLLOGS: " + allLogs.length);
       if (filtered.length === 0) return;
 
       var grouped = groupByDate(filtered);
