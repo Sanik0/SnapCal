@@ -457,11 +457,11 @@
                         var parsed = JSON.parse(raw.substring(i));
                         if (parsed && parsed.logs) {
                             existingLogs = parsed.logs;
+                            console.log("Loaded " + existingLogs.length + " existing logs");
                         }
                     }
                 }
             } catch (e) { }
-
             startImageInterval();
         });
 

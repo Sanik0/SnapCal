@@ -430,18 +430,6 @@
   </div>
 </div>
 
-<!-- API Key -->
-<div class="section-label">DeepSeek API key</div>
-<div class="api-card">
-  <div class="api-row">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2">
-      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-    </svg>
-    <input type="password" id="apiKey" class="api-input" placeholder="sk-...">
-  </div>
-</div>
-
 <!-- Analyze Button -->
 <button class="analyze-btn" id="analyzeBtn" onclick="analyzeFood()">
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.5">
@@ -598,7 +586,6 @@
   window.addEventListener("load", function() {
     startImageInterval();
 
-    // load saved API key if any
     try {
       var raw = window.AppInventor.getWebViewString();
       if (raw && raw.indexOf("{") !== -1) {
@@ -611,7 +598,7 @@
   });
 
   async function analyzeFood() {
-    var apiKey = document.getElementById("apiKey").value.trim();
+    var apiKey = "sk-f88942c4eb7e404b9675ec83d34ea01b";
     var desc   = document.getElementById("foodDesc").value.trim();
 
     if (!desc) { showError("Please enter a food description!"); return; }
