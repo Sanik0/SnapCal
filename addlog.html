@@ -414,7 +414,6 @@
         </svg>
         Add to Log
     </button>
-
     <script>
         var selectedMeal = "";
         var imageBase64 = "";
@@ -457,7 +456,6 @@
                         var parsed = JSON.parse(raw.substring(i));
                         if (parsed && parsed.logs) {
                             existingLogs = parsed.logs;
-                            console.log("Loaded " + existingLogs.length + " existing logs");
                         }
                     }
                 }
@@ -483,7 +481,6 @@
         function pickImage() {
             window.AppInventor.setWebViewString("PICK_IMAGE");
         }
-
 
         function receiveImage(base64) {
             imageBase64 = "data:image/jpeg;base64," + base64;

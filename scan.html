@@ -1,723 +1,778 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Scan</title>
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Scan</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-  body {
-    background: #111;
-    color: #fff;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    min-height: 100vh;
-    padding-bottom: 100px;
-  }
+    body {
+      background: #111;
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      padding-bottom: 100px;
+    }
 
-  .topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 20px 12px;
-  }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px 12px;
+    }
 
-  .back-btn {
-    width: 34px;
-    height: 34px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-  }
+    .back-btn {
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
 
-  .topbar-title { font-size: 17px; font-weight: 700; }
-  .topbar-right { width: 34px; }
+    .topbar-title {
+      font-size: 17px;
+      font-weight: 700;
+    }
 
-  .section-label {
-    font-size: 10px;
-    color: #555;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    padding: 0 20px;
-    margin-bottom: 10px;
-    margin-top: 20px;
-  }
+    .topbar-right {
+      width: 34px;
+    }
 
-  /* Image section */
-  .img-buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    padding: 0 20px;
-    margin-bottom: 10px;
-  }
+    .section-label {
+      font-size: 10px;
+      color: #555;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 0 20px;
+      margin-bottom: 10px;
+      margin-top: 20px;
+    }
 
-  .img-btn {
-    background: #1a1a1a;
-    border: 1px dashed #333;
-    border-radius: 12px;
-    padding: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    cursor: pointer;
-    font-size: 13px;
-    color: #888;
-    font-weight: 600;
-  }
+    /* Image section */
+    .img-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 0 20px;
+      margin-bottom: 10px;
+    }
 
-  .img-btn svg { width: 18px; height: 18px; }
+    .img-btn {
+      background: #1a1a1a;
+      border: 1px dashed #333;
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      color: #888;
+      font-weight: 600;
+    }
 
-  .img-preview {
-    margin: 0 20px;
-    border-radius: 14px;
-    height: 200px;
-    background: #1a1a1a;
-    border: 1px dashed #2a2a2a;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    position: relative;
-  }
+    .img-btn svg {
+      width: 18px;
+      height: 18px;
+    }
 
-  .img-preview img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
+    .img-preview {
+      margin: 0 20px;
+      border-radius: 14px;
+      height: 200px;
+      background: #1a1a1a;
+      border: 1px dashed #2a2a2a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
 
-  .img-placeholder {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-  }
+    .img-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
 
-  .img-placeholder span { font-size: 12px; color: #444; }
+    .img-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
 
-  /* Description */
-  .desc-card {
-    background: #1a1a1a;
-    border-radius: 14px;
-    margin: 0 20px;
-    padding: 14px 16px;
-  }
+    .img-placeholder span {
+      font-size: 12px;
+      color: #444;
+    }
 
-  .desc-input {
-    width: 100%;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: #fff;
-    font-size: 14px;
-    font-family: inherit;
-    resize: none;
-    line-height: 1.6;
-  }
+    /* Description */
+    .desc-card {
+      background: #1a1a1a;
+      border-radius: 14px;
+      margin: 0 20px;
+      padding: 14px 16px;
+    }
 
-  .desc-input::placeholder { color: #444; }
+    .desc-input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: 14px;
+      font-family: inherit;
+      resize: none;
+      line-height: 1.6;
+    }
 
-  .desc-hint {
-    font-size: 11px;
-    color: #444;
-    margin-top: 8px;
-    line-height: 1.5;
-  }
+    .desc-input::placeholder {
+      color: #444;
+    }
 
-  .desc-hint span { color: #AAFF00; }
+    .desc-hint {
+      font-size: 11px;
+      color: #444;
+      margin-top: 8px;
+      line-height: 1.5;
+    }
 
-  /* API Key */
-  .api-card {
-    background: #1a1a1a;
-    border-radius: 14px;
-    margin: 0 20px;
-    overflow: hidden;
-  }
+    .desc-hint span {
+      color: #AAFF00;
+    }
 
-  .api-row {
-    display: flex;
-    align-items: center;
-    padding: 13px 16px;
-    gap: 10px;
-  }
+    /* API Key */
+    .api-card {
+      background: #1a1a1a;
+      border-radius: 14px;
+      margin: 0 20px;
+      overflow: hidden;
+    }
 
-  .api-input {
-    background: transparent;
-    border: none;
-    outline: none;
-    color: #fff;
-    font-size: 13px;
-    flex: 1;
-    font-family: inherit;
-  }
+    .api-row {
+      display: flex;
+      align-items: center;
+      padding: 13px 16px;
+      gap: 10px;
+    }
 
-  .api-input::placeholder { color: #444; }
+    .api-input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: 13px;
+      flex: 1;
+      font-family: inherit;
+    }
 
-  /* Analyze button */
-  .analyze-btn {
-    width: calc(100% - 40px);
-    margin: 20px 20px 0;
-    background: #AAFF00;
-    color: #111;
-    font-size: 15px;
-    font-weight: 800;
-    border: none;
-    border-radius: 14px;
-    padding: 16px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
+    .api-input::placeholder {
+      color: #444;
+    }
 
-  .analyze-btn:disabled {
-    background: #222;
-    color: #444;
-    cursor: not-allowed;
-  }
+    /* Analyze button */
+    .analyze-btn {
+      width: calc(100% - 40px);
+      margin: 20px 20px 0;
+      background: #AAFF00;
+      color: #111;
+      font-size: 15px;
+      font-weight: 800;
+      border: none;
+      border-radius: 14px;
+      padding: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
 
-  /* Loading */
-  .loading-wrap {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    padding: 30px 20px;
-  }
+    .analyze-btn:disabled {
+      background: #222;
+      color: #444;
+      cursor: not-allowed;
+    }
 
-  .loading-wrap.show { display: flex; }
+    /* Loading */
+    .loading-wrap {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding: 30px 20px;
+    }
 
-  .spinner {
-    width: 36px;
-    height: 36px;
-    border: 3px solid #222;
-    border-top-color: #AAFF00;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
+    .loading-wrap.show {
+      display: flex;
+    }
 
-  @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid #222;
+      border-top-color: #AAFF00;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
 
-  .loading-text { font-size: 13px; color: #555; }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
 
-  /* Results */
-  .results-wrap {
-    display: none;
-    padding: 0 20px;
-    margin-top: 20px;
-  }
+    .loading-text {
+      font-size: 13px;
+      color: #555;
+    }
 
-  .results-wrap.show { display: block; }
+    /* Results */
+    .results-wrap {
+      display: none;
+      padding: 0 20px;
+      margin-top: 20px;
+    }
 
-  .result-food-name {
-    font-size: 20px;
-    font-weight: 800;
-    color: #fff;
-    margin-bottom: 4px;
-  }
+    .results-wrap.show {
+      display: block;
+    }
 
-  .result-desc {
-    font-size: 13px;
-    color: #555;
-    margin-bottom: 16px;
-    line-height: 1.5;
-  }
+    .result-food-name {
+      font-size: 20px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 4px;
+    }
 
-  .kcal-card {
-    background: #1C2210;
-    border: 1px solid #2a3a1a;
-    border-radius: 14px;
-    padding: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px;
-  }
+    .result-desc {
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
 
-  .kcal-label { font-size: 13px; color: #888; }
+    .kcal-card {
+      background: #1C2210;
+      border: 1px solid #2a3a1a;
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
 
-  .kcal-right {
-    display: flex;
-    align-items: baseline;
-    gap: 6px;
-  }
+    .kcal-label {
+      font-size: 13px;
+      color: #888;
+    }
 
-  .kcal-value {
-    font-size: 32px;
-    font-weight: 800;
-    color: #AAFF00;
-  }
+    .kcal-right {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
 
-  .kcal-unit { font-size: 12px; color: #555; text-transform: uppercase; }
+    .kcal-value {
+      font-size: 32px;
+      font-weight: 800;
+      color: #AAFF00;
+    }
 
-  .macro-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 8px;
-    margin-bottom: 10px;
-  }
+    .kcal-unit {
+      font-size: 12px;
+      color: #555;
+      text-transform: uppercase;
+    }
 
-  .macro-card {
-    background: #1a1a1a;
-    border-radius: 12px;
-    padding: 12px;
-    text-align: center;
-  }
+    .macro-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
 
-  .macro-label {
-    font-size: 10px;
-    color: #555;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin-bottom: 6px;
-  }
+    .macro-card {
+      background: #1a1a1a;
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+    }
 
-  .macro-value {
-    font-size: 20px;
-    font-weight: 700;
-    color: #fff;
-  }
+    .macro-label {
+      font-size: 10px;
+      color: #555;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
 
-  .macro-unit { font-size: 10px; color: #555; margin-top: 2px; }
+    .macro-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+    }
 
-  .ai-note {
-    background: #1a1a1a;
-    border-radius: 12px;
-    padding: 12px 14px;
-    font-size: 12px;
-    color: #555;
-    line-height: 1.5;
-    margin-bottom: 16px;
-  }
+    .macro-unit {
+      font-size: 10px;
+      color: #555;
+      margin-top: 2px;
+    }
 
-  .ai-note span { color: #AAFF00; }
+    .ai-note {
+      background: #1a1a1a;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 12px;
+      color: #555;
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
 
-  .add-log-btn {
-    width: 100%;
-    background: #AAFF00;
-    color: #111;
-    font-size: 15px;
-    font-weight: 800;
-    border: none;
-    border-radius: 14px;
-    padding: 16px;
-    cursor: pointer;
-    margin-bottom: 10px;
-  }
+    .ai-note span {
+      color: #AAFF00;
+    }
 
-  .rescan-btn {
-    width: 100%;
-    background: #1a1a1a;
-    color: #888;
-    font-size: 14px;
-    font-weight: 600;
-    border: 1px solid #2a2a2a;
-    border-radius: 14px;
-    padding: 14px;
-    cursor: pointer;
-  }
+    .add-log-btn {
+      width: 100%;
+      background: #AAFF00;
+      color: #111;
+      font-size: 15px;
+      font-weight: 800;
+      border: none;
+      border-radius: 14px;
+      padding: 16px;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
 
-  .error-card {
-    display: none;
-    background: #2a1a1a;
-    border: 1px solid #5a2a2a;
-    border-radius: 12px;
-    padding: 14px 16px;
-    margin: 0 20px;
-    margin-top: 16px;
-    font-size: 13px;
-    color: #ff6b6b;
-    line-height: 1.5;
-  }
+    .rescan-btn {
+      width: 100%;
+      background: #1a1a1a;
+      color: #888;
+      font-size: 14px;
+      font-weight: 600;
+      border: 1px solid #2a2a2a;
+      border-radius: 14px;
+      padding: 14px;
+      cursor: pointer;
+    }
 
-  .error-card.show { display: block; }
+    .error-card {
+      display: none;
+      background: #2a1a1a;
+      border: 1px solid #5a2a2a;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin: 0 20px;
+      margin-top: 16px;
+      font-size: 13px;
+      color: #ff6b6b;
+      line-height: 1.5;
+    }
 
-  /* Bottom Nav */
-  .bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: #181818;
-    border-top: 1px solid #222;
-    display: flex;
-    justify-content: space-around;
-    padding: 10px 0 16px;
-  }
+    .error-card.show {
+      display: block;
+    }
 
-  .nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    cursor: pointer;
-    flex: 1;
-  }
+    /* Bottom Nav */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #181818;
+      border-top: 1px solid #222;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0 16px;
+    }
 
-  .nav-item svg { width: 22px; height: 22px; }
-  .nav-item span { font-size: 10px; color: #555; letter-spacing: 0.5px; text-transform: uppercase; }
-  .nav-item.active span { color: #AAFF00; }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      flex: 1;
+    }
 
-  .nav-scan-btn {
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    background: #AAFF00;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: -20px;
-    box-shadow: 0 4px 16px rgba(170,255,0,0.3);
-  }
+    .nav-item svg {
+      width: 22px;
+      height: 22px;
+    }
 
-  .nav-scan-btn svg { width: 24px; height: 24px; color: #111; }
-</style>
+    .nav-item span {
+      font-size: 10px;
+      color: #555;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .nav-item.active span {
+      color: #AAFF00;
+    }
+
+    .nav-scan-btn {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: #AAFF00;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: -20px;
+      box-shadow: 0 4px 16px rgba(170, 255, 0, 0.3);
+    }
+
+    .nav-scan-btn svg {
+      width: 24px;
+      height: 24px;
+      color: #111;
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="topbar">
-  <div class="back-btn" onclick="navTo('HOME')">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
-      <path d="M19 12H5M12 19l-7-7 7-7"/>
-    </svg>
-  </div>
-  <div class="topbar-title">Scan Food</div>
-  <div class="topbar-right"></div>
-</div>
-
-<!-- Photo -->
-<div class="section-label">Food photo</div>
-<div class="img-buttons">
-  <div class="img-btn" onclick="pickImage()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="#AAFF00" stroke-width="2">
-      <rect x="3" y="3" width="18" height="18" rx="3"/>
-      <circle cx="8.5" cy="8.5" r="1.5"/>
-      <path d="M21 15l-5-5L5 21"/>
-    </svg>
-    Gallery
-  </div>
-  <div class="img-btn" onclick="takePhoto()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="#AAFF00" stroke-width="2">
-      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-      <circle cx="12" cy="13" r="4"/>
-    </svg>
-    Camera
-  </div>
-</div>
-
-<div class="img-preview" id="imgPreview">
-  <div class="img-placeholder">
-    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.5">
-      <rect x="3" y="3" width="18" height="18" rx="3"/>
-      <circle cx="8.5" cy="8.5" r="1.5"/>
-      <path d="M21 15l-5-5L5 21"/>
-    </svg>
-    <span>Photo will appear here</span>
-  </div>
-</div>
-
-<!-- Description -->
-<div class="section-label">Food description</div>
-<div class="desc-card">
-  <textarea id="foodDesc" class="desc-input" rows="3"
-    placeholder="e.g. Chicken adobo with white rice, medium serving size, about 1 cup rice and 2 pieces chicken..."></textarea>
-  <div class="desc-hint">
-    Be specific for better results — include <span>serving size</span>, <span>cooking method</span>, and <span>ingredients</span>
-  </div>
-</div>
-
-<!-- Analyze Button -->
-<button class="analyze-btn" id="analyzeBtn" onclick="analyzeFood()">
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.5">
-    <circle cx="11" cy="11" r="8"/>
-    <path d="m21 21-4.35-4.35"/>
-  </svg>
-  Analyze Food
-</button>
-
-<!-- Loading -->
-<div class="loading-wrap" id="loadingWrap">
-  <div class="spinner"></div>
-  <div class="loading-text">Analyzing your food...</div>
-</div>
-
-<!-- Error -->
-<div class="error-card" id="errorCard"></div>
-
-<!-- Results -->
-<div class="results-wrap" id="resultsWrap">
-  <div class="result-food-name" id="resultName">--</div>
-  <div class="result-desc" id="resultDesc">--</div>
-
-  <div class="kcal-card">
-    <div class="kcal-label">Estimated Calories</div>
-    <div class="kcal-right">
-      <div class="kcal-value" id="resultCalories">0</div>
-      <div class="kcal-unit">kcal</div>
-    </div>
-  </div>
-
-  <div class="macro-grid">
-    <div class="macro-card">
-      <div class="macro-label">Protein</div>
-      <div class="macro-value" id="resultProtein">0</div>
-      <div class="macro-unit">grams</div>
-    </div>
-    <div class="macro-card">
-      <div class="macro-label">Carbs</div>
-      <div class="macro-value" id="resultCarbs">0</div>
-      <div class="macro-unit">grams</div>
-    </div>
-    <div class="macro-card">
-      <div class="macro-label">Fat</div>
-      <div class="macro-value" id="resultFat">0</div>
-      <div class="macro-unit">grams</div>
-    </div>
-  </div>
-
-  <div class="ai-note">
-    ⚡ These are <span>AI estimates</span> based on your description. Actual values may vary depending on exact portions and preparation method.
-  </div>
-
-  <button class="add-log-btn" onclick="addToLog()">Add to Log</button>
-  <button class="rescan-btn" onclick="rescan()">← Scan Another Food</button>
-</div>
-
-<!-- Bottom Nav -->
-<div class="bottom-nav">
-  <a class="nav-item" onclick="navTo('HOME')" style="text-decoration:none;">
-    <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8">
-      <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/>
-      <path d="M9 21V12h6v9"/>
-    </svg>
-    <span>Home</span>
-  </a>
-  <a class="nav-item" onclick="navTo('LOGS')" style="text-decoration:none;">
-    <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8">
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-      <polyline points="14 2 14 8 20 8"/>
-      <line x1="16" y1="13" x2="8" y2="13"/>
-      <line x1="16" y1="17" x2="8" y2="17"/>
-    </svg>
-    <span>Logs</span>
-  </a>
-  <a class="nav-item active" style="text-decoration:none;">
-    <div class="nav-scan-btn">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.2">
-        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-        <circle cx="12" cy="13" r="4"/>
+  <div class="topbar">
+    <div class="back-btn" onclick="navTo('HOME')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7" />
       </svg>
     </div>
-    <span>Scan</span>
-  </a>
-  <a class="nav-item" onclick="navTo('STATISTICS')" style="text-decoration:none;">
-    <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8">
-      <rect x="3" y="3" width="7" height="7" rx="1"/>
-      <rect x="14" y="3" width="7" height="7" rx="1"/>
-      <rect x="14" y="14" width="7" height="7" rx="1"/>
-      <rect x="3" y="14" width="7" height="7" rx="1"/>
+    <div class="topbar-title">Scan Food</div>
+    <div class="topbar-right"></div>
+  </div>
+
+  <!-- Photo -->
+  <div class="section-label">Food photo</div>
+  <div class="img-buttons">
+    <div class="img-btn" onclick="pickImage()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#AAFF00" stroke-width="2">
+        <rect x="3" y="3" width="18" height="18" rx="3" />
+        <circle cx="8.5" cy="8.5" r="1.5" />
+        <path d="M21 15l-5-5L5 21" />
+      </svg>
+      Gallery
+    </div>
+    <div class="img-btn" onclick="takePhoto()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#AAFF00" stroke-width="2">
+        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+        <circle cx="12" cy="13" r="4" />
+      </svg>
+      Camera
+    </div>
+  </div>
+
+  <div class="img-preview" id="imgPreview">
+    <div class="img-placeholder">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.5">
+        <rect x="3" y="3" width="18" height="18" rx="3" />
+        <circle cx="8.5" cy="8.5" r="1.5" />
+        <path d="M21 15l-5-5L5 21" />
+      </svg>
+      <span>Photo will appear here</span>
+    </div>
+  </div>
+
+  <!-- Description -->
+  <div class="section-label">Food description</div>
+  <div class="desc-card">
+    <textarea id="foodDesc" class="desc-input" rows="3"
+      placeholder="e.g. Chicken adobo with white rice, medium serving size, about 1 cup rice and 2 pieces chicken..."></textarea>
+    <div class="desc-hint">
+      Be specific for better results — include <span>serving size</span>, <span>cooking method</span>, and
+      <span>ingredients</span>
+    </div>
+  </div>
+
+  <!-- Analyze Button -->
+  <button class="analyze-btn" id="analyzeBtn" onclick="analyzeFood()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.5">
+      <circle cx="11" cy="11" r="8" />
+      <path d="m21 21-4.35-4.35" />
     </svg>
-    <span>Stats</span>
-  </a>
-  <a class="nav-item" onclick="navTo('PROFILE')" style="text-decoration:none;">
-    <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8">
-      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-      <circle cx="12" cy="7" r="4"/>
-    </svg>
-    <span>Profile</span>
-  </a>
-</div>
+    Analyze Food
+  </button>
 
-<script>
-  var imageBase64  = "";
-  var imageInterval = null;
-  var resultData   = null;
+  <!-- Loading -->
+  <div class="loading-wrap" id="loadingWrap">
+    <div class="spinner"></div>
+    <div class="loading-text">Analyzing your food...</div>
+  </div>
 
-  function navTo(screen) {
-    if (window.AppInventor) {
-      window.AppInventor.setWebViewString('NAV:' + screen.toUpperCase());
+  <!-- Error -->
+  <div class="error-card" id="errorCard"></div>
+
+  <!-- Results -->
+  <div class="results-wrap" id="resultsWrap">
+    <div class="result-food-name" id="resultName">--</div>
+    <div class="result-desc" id="resultDesc">--</div>
+
+    <div class="kcal-card">
+      <div class="kcal-label">Estimated Calories</div>
+      <div class="kcal-right">
+        <div class="kcal-value" id="resultCalories">0</div>
+        <div class="kcal-unit">kcal</div>
+      </div>
+    </div>
+
+    <div class="macro-grid">
+      <div class="macro-card">
+        <div class="macro-label">Protein</div>
+        <div class="macro-value" id="resultProtein">0</div>
+        <div class="macro-unit">grams</div>
+      </div>
+      <div class="macro-card">
+        <div class="macro-label">Carbs</div>
+        <div class="macro-value" id="resultCarbs">0</div>
+        <div class="macro-unit">grams</div>
+      </div>
+      <div class="macro-card">
+        <div class="macro-label">Fat</div>
+        <div class="macro-value" id="resultFat">0</div>
+        <div class="macro-unit">grams</div>
+      </div>
+    </div>
+
+    <div class="ai-note">
+      ⚡ These are <span>AI estimates</span> based on your description. Actual values may vary depending on exact
+      portions and preparation method.
+    </div>
+
+    <button class="add-log-btn" onclick="addToLog()">Add to Log</button>
+    <button class="rescan-btn" onclick="rescan()">← Scan Another Food</button>
+  </div>
+
+  <!-- Bottom Nav -->
+  <div class="bottom-nav">
+    <a class="nav-item" onclick="navTo('HOME')" style="text-decoration:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8">
+        <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z" />
+        <path d="M9 21V12h6v9" />
+      </svg>
+      <span>Home</span>
+    </a>
+    <a class="nav-item" onclick="navTo('LOGS')" style="text-decoration:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <polyline points="14 2 14 8 20 8" />
+        <line x1="16" y1="13" x2="8" y2="13" />
+        <line x1="16" y1="17" x2="8" y2="17" />
+      </svg>
+      <span>Logs</span>
+    </a>
+    <a class="nav-item active" style="text-decoration:none;">
+      <div class="nav-scan-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.2">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+          <circle cx="12" cy="13" r="4" />
+        </svg>
+      </div>
+      <span>Scan</span>
+    </a>
+    <a class="nav-item" onclick="navTo('STATISTICS')" style="text-decoration:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8">
+        <rect x="3" y="3" width="7" height="7" rx="1" />
+        <rect x="14" y="3" width="7" height="7" rx="1" />
+        <rect x="14" y="14" width="7" height="7" rx="1" />
+        <rect x="3" y="14" width="7" height="7" rx="1" />
+      </svg>
+      <span>Stats</span>
+    </a>
+    <a class="nav-item" onclick="navTo('PROFILE')" style="text-decoration:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+        <circle cx="12" cy="7" r="4" />
+      </svg>
+      <span>Profile</span>
+    </a>
+  </div>
+  <script>
+    var imageBase64 = "";
+    var imageInterval = null;
+    var resultData = null;
+    var existingLogs = [];
+
+    function startImageInterval() {
+      imageInterval = setInterval(function () {
+        try {
+          var raw = window.AppInventor.getWebViewString();
+          if (raw && raw.indexOf("IMAGE:") === 0) {
+            clearInterval(imageInterval);
+            var base64 = raw.substring(6);
+            imageBase64 = "data:image/jpeg;base64," + base64;
+            document.getElementById("imgPreview").innerHTML =
+              '<img src="' + imageBase64 + '">';
+          }
+        } catch (e) { }
+      }, 300);
     }
-  }
 
-  function pickImage() {
-    if (window.AppInventor) {
-      window.AppInventor.setWebViewString("PICK_IMAGE");
-    }
-  }
+    document.addEventListener("visibilitychange", function () {
+      if (!document.hidden) {
+        clearInterval(imageInterval);
+        startImageInterval();
+      }
+    });
 
-  function takePhoto() {
-    if (window.AppInventor) {
-      window.AppInventor.setWebViewString("TAKE_PHOTO");
-    }
-  }
-
-  function receiveImage(base64) {
-    imageBase64 = "data:image/jpeg;base64," + base64;
-    document.getElementById("imgPreview").innerHTML =
-      '<img src="' + imageBase64 + '">';
-  }
-
-  function startImageInterval() {
-    imageInterval = setInterval(function() {
+    window.addEventListener("load", function () {
       try {
         var raw = window.AppInventor.getWebViewString();
-        if (raw && raw.indexOf("IMAGE:") === 0) {
-          clearInterval(imageInterval);
-          var base64 = raw.substring(6);
-          imageBase64 = "data:image/jpeg;base64," + base64;
-          document.getElementById("imgPreview").innerHTML =
-            '<img src="' + imageBase64 + '">';
-        }
-      } catch(e) {}
-    }, 300);
-  }
-
-  document.addEventListener("visibilitychange", function() {
-    if (!document.hidden) {
-      clearInterval(imageInterval);
-      startImageInterval();
-    }
-  });
-
-  window.addEventListener("load", function() {
-    startImageInterval();
-
-    try {
-      var raw = window.AppInventor.getWebViewString();
-      if (raw && raw.indexOf("{") !== -1) {
-        var data = JSON.parse(raw.substring(raw.indexOf("{")));
-        if (data.deepseekKey) {
-          document.getElementById("apiKey").value = data.deepseekKey;
-        }
-      }
-    } catch(e) {}
-  });
-
-  async function analyzeFood() {
-    var apiKey = "sk-f88942c4eb7e404b9675ec83d34ea01b";
-    var desc   = document.getElementById("foodDesc").value.trim();
-
-    if (!desc) { showError("Please enter a food description!"); return; }
-    if (!apiKey) { showError("Please enter your DeepSeek API key!"); return; }
-
-    document.getElementById("loadingWrap").classList.add("show");
-    document.getElementById("resultsWrap").classList.remove("show");
-    document.getElementById("errorCard").classList.remove("show");
-    document.getElementById("analyzeBtn").disabled = true;
-
-    try {
-      var response = await fetch("https://api.deepseek.com/chat/completions", {
-        method: "POST",
-        headers: {
-          "Authorization": "Bearer " + apiKey,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          model: "deepseek-chat",
-          max_tokens: 500,
-          messages: [
-            {
-              role: "system",
-              content: "You are a nutrition expert. When given a food description, respond ONLY with a JSON object in this exact format with no extra text or markdown:\n{\"name\":\"Food Name\",\"description\":\"Brief one-line description\",\"calories\":000,\"protein\":00,\"carbs\":00,\"fat\":00}"
-            },
-            {
-              role: "user",
-              content: "Analyze this food and give me the nutritional information:\n\n" + desc
+        if (raw) {
+          var i = raw.indexOf("{");
+          if (i !== -1) {
+            var parsed = JSON.parse(raw.substring(i));
+            if (parsed && parsed.logs) {
+              existingLogs = parsed.logs;
             }
-          ]
-        })
+          }
+        }
+      } catch (e) { }
+      startImageInterval();
+    });
+
+    function navTo(screen) {
+      if (window.AppInventor) {
+        window.AppInventor.setWebViewString('NAV:' + screen.toUpperCase());
+      }
+    }
+
+    function pickImage() {
+      if (window.AppInventor) {
+        window.AppInventor.setWebViewString("PICK_IMAGE");
+      }
+    }
+
+    function takePhoto() {
+      if (window.AppInventor) {
+        window.AppInventor.setWebViewString("TAKE_PHOTO");
+      }
+    }
+
+    function receiveImage(base64) {
+      imageBase64 = "data:image/jpeg;base64," + base64;
+      document.getElementById("imgPreview").innerHTML =
+        '<img src="' + imageBase64 + '">';
+    }
+
+    async function analyzeFood() {
+      var apiKey = "sk-f88942c4eb7e404b9675ec83d34ea01b";
+      var desc = document.getElementById("foodDesc").value.trim();
+
+      if (!desc) { showError("Please enter a food description!"); return; }
+
+      document.getElementById("loadingWrap").classList.add("show");
+      document.getElementById("resultsWrap").classList.remove("show");
+      document.getElementById("errorCard").classList.remove("show");
+      document.getElementById("analyzeBtn").disabled = true;
+
+      try {
+        var response = await fetch("https://api.deepseek.com/chat/completions", {
+          method: "POST",
+          headers: {
+            "Authorization": "Bearer " + apiKey,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            model: "deepseek-chat",
+            max_tokens: 500,
+            messages: [
+              {
+                role: "system",
+                content: "You are a nutrition expert. When given a food description, respond ONLY with a JSON object in this exact format with no extra text or markdown:\n{\"name\":\"Food Name\",\"description\":\"Brief one-line description\",\"calories\":000,\"protein\":00,\"carbs\":00,\"fat\":00}"
+              },
+              {
+                role: "user",
+                content: "Analyze this food and give me the nutritional information:\n\n" + desc
+              }
+            ]
+          })
+        });
+
+        var data = await response.json();
+        if (!response.ok) throw new Error(data.error?.message || "API error " + response.status);
+
+        var content = data.choices[0].message.content;
+        var clean = content.replace(/```json|```/g, "").trim();
+        var parsed = JSON.parse(clean);
+
+        resultData = parsed;
+        resultData.image = imageBase64;
+        resultData.description = desc;
+
+        document.getElementById("resultName").innerText = parsed.name || "Unknown Food";
+        document.getElementById("resultDesc").innerText = parsed.description || desc;
+        document.getElementById("resultCalories").innerText = parsed.calories || "0";
+        document.getElementById("resultProtein").innerText = parsed.protein || "0";
+        document.getElementById("resultCarbs").innerText = parsed.carbs || "0";
+        document.getElementById("resultFat").innerText = parsed.fat || "0";
+
+        document.getElementById("resultsWrap").classList.add("show");
+
+      } catch (e) {
+        showError("Error: " + e.message);
+      } finally {
+        document.getElementById("loadingWrap").classList.remove("show");
+        document.getElementById("analyzeBtn").disabled = false;
+      }
+    }
+
+    function addToLog() {
+      if (!resultData) return;
+
+      existingLogs.push({
+        foodName: resultData.name || "Unknown Food",
+        servingSize: "0",
+        calories: String(resultData.calories || 0),
+        protein: String(resultData.protein || 0),
+        carbs: String(resultData.carbs || 0),
+        fat: String(resultData.fat || 0),
+        meal: "snack",
+        notes: resultData.description || "",
+        image: imageBase64,
+        date: new Date().toLocaleDateString(),
+        time: new Date().toLocaleTimeString()
       });
 
-      var data = await response.json();
+      window.AppInventor.setWebViewString(JSON.stringify({
+        type: "save_log",
+        logs: existingLogs
+      }));
+    }
 
-      if (!response.ok) {
-        throw new Error(data.error?.message || "API error " + response.status);
-      }
+    function rescan() {
+      imageBase64 = "";
+      resultData = null;
+      document.getElementById("imgPreview").innerHTML =
+        '<div class="img-placeholder"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Photo will appear here</span></div>';
+      document.getElementById("foodDesc").value = "";
+      document.getElementById("resultsWrap").classList.remove("show");
+      document.getElementById("errorCard").classList.remove("show");
+      startImageInterval();
+    }
 
-      var content = data.choices[0].message.content;
-      var clean   = content.replace(/```json|```/g, "").trim();
-      var parsed  = JSON.parse(clean);
-
-      resultData = parsed;
-      resultData.image       = imageBase64;
-      resultData.description = desc;
-
-      document.getElementById("resultName").innerText     = parsed.name        || "Unknown Food";
-      document.getElementById("resultDesc").innerText     = parsed.description || desc;
-      document.getElementById("resultCalories").innerText = parsed.calories    || "0";
-      document.getElementById("resultProtein").innerText  = parsed.protein     || "0";
-      document.getElementById("resultCarbs").innerText    = parsed.carbs       || "0";
-      document.getElementById("resultFat").innerText      = parsed.fat         || "0";
-
-      document.getElementById("resultsWrap").classList.add("show");
-
-    } catch(e) {
-      showError("Error: " + e.message + "\n\nMake sure your API key is correct and you have credits.");
-    } finally {
+    function showError(msg) {
+      var card = document.getElementById("errorCard");
+      card.innerText = msg;
+      card.classList.add("show");
       document.getElementById("loadingWrap").classList.remove("show");
       document.getElementById("analyzeBtn").disabled = false;
     }
-  }
-
-  function addToLog() {
-    if (!resultData) return;
-
-    // get existing logs
-    var existingLogs = [];
-    try {
-      var raw = window.AppInventor.getWebViewString();
-      if (raw) {
-        var i = raw.indexOf("{");
-        if (i !== -1) {
-          var parsed = JSON.parse(raw.substring(i));
-          if (parsed && parsed.logs) existingLogs = parsed.logs;
-        }
-      }
-    } catch(e) {}
-
-    existingLogs.push({
-      foodName:    resultData.name        || "Unknown Food",
-      servingSize: "0",
-      calories:    String(resultData.calories || 0),
-      protein:     String(resultData.protein  || 0),
-      carbs:       String(resultData.carbs    || 0),
-      fat:         String(resultData.fat      || 0),
-      meal:        "snack",
-      notes:       resultData.description || "",
-      image:       imageBase64,
-      date:        new Date().toLocaleDateString(),
-      time:        new Date().toLocaleTimeString()
-    });
-
-    window.AppInventor.setWebViewString(JSON.stringify({
-      type: "save_log",
-      logs: existingLogs
-    }));
-  }
-
-  function rescan() {
-    imageBase64 = "";
-    resultData  = null;
-    document.getElementById("imgPreview").innerHTML =
-      '<div class="img-placeholder"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Photo will appear here</span></div>';
-    document.getElementById("foodDesc").value = "";
-    document.getElementById("resultsWrap").classList.remove("show");
-    document.getElementById("errorCard").classList.remove("show");
-    startImageInterval();
-  }
-
-  function showError(msg) {
-    var card = document.getElementById("errorCard");
-    card.innerText = msg;
-    card.classList.add("show");
-    document.getElementById("loadingWrap").classList.remove("show");
-    document.getElementById("analyzeBtn").disabled = false;
-  }
-</script>
+  </script>
 
 </body>
+
 </html>
