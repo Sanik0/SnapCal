@@ -441,6 +441,49 @@
       height: 24px;
       color: #111;
     }
+
+    /* Log CTA */
+    .log-cta {
+      margin: 0 20px 16px;
+      margin-top: 20px;
+      background: #1A1A1A;
+      border-radius: 14px;
+      border: 1px dashed #2A2A2A;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+    }
+
+    .log-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #222;
+      border: 1.5px dashed #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .log-icon svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .log-text-strong {
+      font-size: 13px;
+      color: #888;
+      font-weight: 500;
+      margin-bottom: 1px;
+    }
+
+    .log-text-sub {
+      font-size: 11px;
+      color: #444;
+    }
   </style>
 </head>
 
@@ -506,6 +549,20 @@
     </svg>
     Analyze Food
   </button>
+
+  <!-- Log Manually CTA -->
+  <a class="log-cta" style="text-decoration:none;" onclick="navTo('ADDLOG')">
+    <div class="log-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2">
+        <circle cx="12" cy="12" r="10" />
+        <path d="M12 8v8M8 12h8" />
+      </svg>
+    </div>
+    <div>
+      <div class="log-text-strong">Log manually</div>
+      <div class="log-text-sub">add previous entry</div>
+    </div>
+  </a>
 
   <!-- Loading -->
   <div class="loading-wrap" id="loadingWrap">
