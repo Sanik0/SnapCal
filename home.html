@@ -427,7 +427,7 @@
       <div class="logo">SnapCal</div>
     </div>
 
-    <a onclick="navTo('logs')">
+    <a onclick="navTo('PROFILE')">
       <svg xmlns="http://www.w3.org/2000/svg" height="35px" viewBox="0 -960 960 960" width="35px" fill="#AAFF00">
         <path
           d="M234-276q51-39 114-61.5T480-360q69 0 132 22.5T726-276q35-41 54.5-93T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 59 19.5 111t54.5 93Zm146.5-204.5Q340-521 340-580t40.5-99.5Q421-720 480-720t99.5 40.5Q620-639 620-580t-40.5 99.5Q539-440 480-440t-99.5-40.5ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z" />
@@ -589,18 +589,6 @@
   </div>
 
   <script>
-
-    // calories left
-    var goalKcalEl = document.getElementById("caloriesLeft");
-    var mealsEl = document.getElementById("mealsToday");
-    var proteinLeftEl = document.getElementById("proteinLeft");
-    var streakEl = document.getElementById("statStreak");
-
-    if (goalKcalEl) goalKcalEl.innerText = Math.max(0, goalKcal - totalKcal).toLocaleString() + " kcal";
-    if (mealsEl) mealsEl.innerText = logs.filter(function (l) { return l.date === today; }).length;
-    if (proteinLeftEl) proteinLeftEl.innerText = Math.max(0, goalProtein - totalProtein) + "g";
-    if (streakEl) streakEl.innerText = calculateStreak(logs);
-
     function capitalize(str) {
       return str.charAt(0).toUpperCase() + str.slice(1);
     }
@@ -666,6 +654,34 @@
       if (proteinBar) proteinBar.style.width = Math.min((totalProtein / goalProtein) * 100, 100) + "%";
       if (carbsBar) carbsBar.style.width = Math.min((totalCarbs / goalCarbs) * 100, 100) + "%";
       if (fatsBar) fatsBar.style.width = Math.min((totalFats / goalFats) * 100, 100) + "%";
+
+      var goalKcalEl = document.getElementById("caloriesLeft");
+      var mealsEl = document.getElementById("mealsToday");
+      var proteinLeftEl = document.getElementById("proteinLeft");
+      var streakEl = document.getElementById("statStreak");
+
+      if (goalKcalEl) goalKcalEl.innerText = Math.max(0, goalKcal - totalKcal).toLocaleString() + " kcal";
+      if (mealsEl) mealsEl.innerText = logs.filter(function (l) { return l.date === today; }).length;
+      if (proteinLeftEl) proteinLeftEl.innerText = Math.max(0, goalProtein - totalProtein) + "g";
+      if (streakEl) streakEl.innerText = calculateStreak(logs);
+    }
+
+    function calculateStreak(logs) {
+      if (!logs.length) return 0;
+      var grouped = {};
+      logs.forEach(function (l) {
+        if (!grouped[l.date]) grouped[l.date] = true;
+      });
+      var streak = 0;
+      var check = new Date();
+      while (true) {
+        var dateStr = check.toLocaleDateString();
+        if (grouped[dateStr]) {
+          streak++;
+          check.setDate(check.getDate() - 1);
+        } else break;
+      }
+      return streak;
     }
 
     window.addEventListener("load", function () {
