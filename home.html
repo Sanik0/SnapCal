@@ -516,14 +516,14 @@
   <!-- Stats -->
   <div class="stats-grid">
     <div class="stat-card">
-      <div class="stat-label">Active kcal</div>
-      <div class="stat-value accent">482</div>
-      <div class="stat-sub">burned today</div>
+      <div class="stat-label">Calories left</div>
+      <div class="stat-value accent" id="caloriesLeft">--</div>
+      <div class="stat-sub">remaining today</div>
     </div>
     <div class="stat-card">
-      <div class="stat-label">Meal streak</div>
-      <div class="stat-value">1.8</div>
-      <div class="stat-sub">avg meals / day</div>
+      <div class="stat-label">Meals today</div>
+      <div class="stat-value" id="mealsToday">0</div>
+      <div class="stat-sub">logged today</div>
     </div>
   </div>
 
@@ -531,14 +531,14 @@
 
   <div class="stats-grid">
     <div class="stat-card">
-      <div class="stat-label">Steps</div>
-      <div class="stat-value">8.4k</div>
-      <div class="stat-sub">today</div>
+      <div class="stat-label">Protein left</div>
+      <div class="stat-value" id="proteinLeft">--</div>
+      <div class="stat-sub">grams remaining</div>
     </div>
     <div class="stat-card">
-      <div class="stat-label">Active time</div>
-      <div class="stat-value">12:15</div>
-      <div class="stat-sub">hh : mm</div>
+      <div class="stat-label">Meal streak</div>
+      <div class="stat-value" id="statStreak">0</div>
+      <div class="stat-sub">days in a row</div>
     </div>
   </div>
 
@@ -589,6 +589,18 @@
   </div>
 
   <script>
+
+    // calories left
+    var goalKcalEl = document.getElementById("caloriesLeft");
+    var mealsEl = document.getElementById("mealsToday");
+    var proteinLeftEl = document.getElementById("proteinLeft");
+    var streakEl = document.getElementById("statStreak");
+
+    if (goalKcalEl) goalKcalEl.innerText = Math.max(0, goalKcal - totalKcal).toLocaleString() + " kcal";
+    if (mealsEl) mealsEl.innerText = logs.filter(function (l) { return l.date === today; }).length;
+    if (proteinLeftEl) proteinLeftEl.innerText = Math.max(0, goalProtein - totalProtein) + "g";
+    if (streakEl) streakEl.innerText = calculateStreak(logs);
+
     function capitalize(str) {
       return str.charAt(0).toUpperCase() + str.slice(1);
     }
