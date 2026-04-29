@@ -861,20 +861,77 @@
       }
     }
 
+    function calculateStreak(logs) {
+      if (!logs.length) return 0;
+      var grouped = {};
+      logs.forEach(function (l) {
+        if (!grouped[l.date]) grouped[l.date] = true;
+      });
+      var streak = 0;
+      var check = new Date();
+      while (true) {
+        var dateStr = check.toLocaleDateString();
+        if (grouped[dateStr]) {
+          streak++;
+          check.setDate(check.getDate() - 1);
+        } else break;
+      }
+      return streak;
+    }
+
+    function calculateGoalsHit(logs) {
+      var grouped = {};
+      logs.forEach(function (l) {
+        if (!grouped[l.date]) grouped[l.date] = 0;
+        grouped[l.date] += parseFloat(l.calories) || 0;
+      });
+      // count days where calories were logged (simplified goals hit)
+      return Object.keys(grouped).length;
+    }
+
     window.addEventListener("load", function () {
       try {
         var raw = window.AppInventor.getWebViewString();
         if (!raw) return;
 
-        var data = JSON.parse(raw);
+        var userData = {};
+        var logsData = null;
 
-        document.getElementById("profileName").innerText = data.name || "User";
-        document.getElementById("bodyGender").innerText = data.gender || "--";
-        document.getElementById("bodyWeight").innerText = data.weight || "--";
-        document.getElementById("bodyHeight").innerText = data.height || "--";
-        document.getElementById("bodyAge").innerText = data.age || "--";
+        if (raw.indexOf("|LOGS|") !== -1) {
+          var idx = raw.indexOf("|LOGS|");
+          userData = JSON.parse(raw.substring(0, idx));
+          var lRaw = raw.substring(idx + 6);
+          if (lRaw && lRaw.length > 2) {
+            var lParsed = JSON.parse(lRaw);
+            logsData = lParsed.logs ? lParsed.logs : null;
+          }
+        } else {
+          userData = JSON.parse(raw);
+        }
 
-        calculateGoals(data);
+        // user info
+        document.getElementById("profileName").innerText = userData.name || "User";
+        document.getElementById("bodyGender").innerText = userData.gender || "--";
+        document.getElementById("bodyWeight").innerText = userData.weight || "--";
+        document.getElementById("bodyHeight").innerText = userData.height || "--";
+        document.getElementById("bodyAge").innerText = userData.age || "--";
+
+        calculateGoals(userData);
+
+        // stats from logs
+        if (logsData && logsData.length > 0) {
+          var streak = calculateStreak(logsData);
+          var goalsHit = calculateGoalsHit(logsData);
+          var firstLog = logsData[0];
+          var firstDate = firstLog ? firstLog.date : "--";
+
+          document.getElementById("streakBadge").innerText = streak + " Day Streak";
+          document.getElementById("memberSince").innerText = "Member since " + firstDate;
+          document.getElementById("totalMealsProfile").innerText = logsData.length;
+          document.getElementById("streakProfile").innerText = streak;
+          document.getElementById("goalsHitProfile").innerText = goalsHit;
+        }
+
       } catch (e) { }
     });
 
