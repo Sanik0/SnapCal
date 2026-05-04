@@ -420,6 +420,12 @@
         var existingLogs = [];
         var imageInterval = null;
 
+        function navTo(screen) {
+            if (window.AppInventor) {
+                window.AppInventor.setWebViewString('NAV:' + screen.toUpperCase());
+            }
+        }
+
         function startImageInterval() {
             imageInterval = setInterval(function () {
                 try {

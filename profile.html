@@ -618,7 +618,6 @@
       </svg>
     </div>
     <div class="profile-name" id="profileName">User</div>
-    <div class="profile-email" id="profileEmail">user@email.com</div>
     <div class="profile-badges">
       <span class="badge badge-green" id="streakBadge">0 Day Streak</span>
       <span class="badge badge-gray" id="memberSince">Member since --</span>
@@ -860,14 +859,43 @@
       return streak;
     }
 
-    function calculateGoalsHit(logs) {
+    function calculateGoalsHit(logs, userData) {
+      // calculate calorie goal from user data
+      var weight = parseFloat(userData.weight) || 70;
+      var height = parseFloat(userData.height) || 170;
+      var age = parseFloat(userData.age) || 24;
+      var gender = userData.gender || "male";
+      var goal = userData.goal || "maintain";
+
+      var bmr = gender === "male"
+        ? (10 * weight) + (6.25 * height) - (5 * age) + 5
+        : (10 * weight) + (6.25 * height) - (5 * age) - 161;
+
+      var tdee = bmr * 1.55;
+      var goalKcal = goal === "lose" ? Math.round(tdee - 500)
+        : goal === "gain" ? Math.round(tdee + 500)
+          : Math.round(tdee);
+
+      // group logs by date and sum calories
       var grouped = {};
       logs.forEach(function (l) {
         if (!grouped[l.date]) grouped[l.date] = 0;
         grouped[l.date] += parseFloat(l.calories) || 0;
       });
-      // count days where calories were logged (simplified goals hit)
-      return Object.keys(grouped).length;
+
+      // count days where calories hit the goal
+      var hit = 0;
+      Object.keys(grouped).forEach(function (date) {
+        if (goal === "lose") {
+          // for lose — goal is to stay UNDER the limit
+          if (grouped[date] <= goalKcal) hit++;
+        } else {
+          // for gain/maintain — goal is to reach at least 90% of target
+          if (grouped[date] >= goalKcal * 0.9) hit++;
+        }
+      });
+
+      return hit;
     }
 
     window.addEventListener("load", function () {
@@ -902,7 +930,7 @@
         // stats from logs
         if (logsData && logsData.length > 0) {
           var streak = calculateStreak(logsData);
-          var goalsHit = calculateGoalsHit(logsData);
+          var goalsHit = calculateGoalsHit(logsData, userData);
           var firstLog = logsData[0];
           var firstDate = firstLog ? firstLog.date : "--";
 
@@ -928,7 +956,13 @@
       try {
         var raw = window.AppInventor.getWebViewString();
         if (raw) {
-          var data = JSON.parse(raw);
+          var data;
+          if (raw.indexOf("|LOGS|") !== -1) {
+            // extract just the user data part
+            data = JSON.parse(raw.substring(0, raw.indexOf("|LOGS|")));
+          } else {
+            data = JSON.parse(raw);
+          }
           document.getElementById("edit-name").value = data.name || "";
           document.getElementById("edit-weight").value = data.weight || "";
           document.getElementById("edit-height").value = data.height || "";
