@@ -1033,6 +1033,7 @@
     });
 
     function calculateGoals(data) {
+      alert("data.goal: " + data.goal + " | calories will be: " + (data.goal === "lose" ? "lose" : data.goal === "gain" ? "gain" : "maintain"));
       var weight = parseFloat(data.weight);
       var height = parseFloat(data.height);
       var age = parseFloat(data.age) || 24;
@@ -1053,15 +1054,14 @@
       // Adjust calories based on goal
       var calories;
       if (goal === "lose") calories = Math.round(tdee - 500);
-      if (goal === "maintain") calories = Math.round(tdee);
-      if (goal === "gain") calories = Math.round(tdee + 500);
+      else if (goal === "maintain") calories = Math.round(tdee);
+      else if (goal === "gain") calories = Math.round(tdee + 500);
 
       // Protein: 2g per kg of bodyweight
       var protein = Math.round(weight * 2);
 
       // Goal type label
       var goalLabel = goal === "lose" ? "Lose weight" : goal === "gain" ? "Gain weight" : "Maintain";
-
       // Update the UI
       document.getElementById("goalCalories").innerText = calories.toLocaleString() + " kcal";
       document.getElementById("goalProtein").innerText = protein + "g";
