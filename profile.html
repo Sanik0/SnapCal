@@ -835,6 +835,10 @@
 
   <script>
 
+    function capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
     function navTo(screen) {
       if (window.AppInventor) {
         window.AppInventor.setWebViewString('NAV:' + screen.toUpperCase());
@@ -920,7 +924,7 @@
 
         // user info
         document.getElementById("profileName").innerText = userData.name || "User";
-        document.getElementById("bodyGender").innerText = userData.gender || "--";
+        document.getElementById("bodyGender").innerText = userData.gender ? capitalize(userData.gender) : "--";
         document.getElementById("bodyWeight").innerText = userData.weight || "--";
         document.getElementById("bodyHeight").innerText = userData.height || "--";
         document.getElementById("bodyAge").innerText = userData.age || "--";
@@ -1033,7 +1037,6 @@
     });
 
     function calculateGoals(data) {
-      alert("data.goal: " + data.goal + " | calories will be: " + (data.goal === "lose" ? "lose" : data.goal === "gain" ? "gain" : "maintain"));
       var weight = parseFloat(data.weight);
       var height = parseFloat(data.height);
       var age = parseFloat(data.age) || 24;
