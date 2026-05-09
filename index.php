@@ -1,481 +1,188 @@
-<?php
-$result = null;
-$error = null;
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $apiKey = trim($_POST['api_key'] ?? '');
-  $foodDesc = trim($_POST['food_description'] ?? '');
-
-  if (!$apiKey || !$foodDesc) {
-    $error = 'API key and food description are required.';
-  } else {
-    $prompt = 'You are a nutrition expert. The user will describe their food or meal. Estimate the macronutrients as accurately as possible. Return ONLY valid JSON with no markdown, no backticks, no extra text. Use this exact structure: {"food_name":"Name of the dish","description":"Brief 1-sentence description","protein_g":25,"carbs_g":45,"fats_g":12,"other_g":8,"calories_kcal":390,"notes":"Any relevant notes about estimation accuracy or assumptions"}';
-
-    $payload = json_encode([
-      'model' => 'deepseek-chat',
-      'max_tokens' => 500,
-      'messages' => [
-        ['role' => 'system', 'content' => $prompt],
-        ['role' => 'user', 'content' => $foodDesc]
-      ]
-    ]);
-
-    $ch = curl_init('https://api.deepseek.com/chat/completions');
-    curl_setopt_array($ch, [
-      CURLOPT_RETURNTRANSFER => true,
-      CURLOPT_POST => true,
-      CURLOPT_POSTFIELDS => $payload,
-      CURLOPT_HTTPHEADER => [
-        'Content-Type: application/json',
-        "Authorization: Bearer {$apiKey}"
-      ],
-      CURLOPT_TIMEOUT => 30,
-    ]);
-
-    $response = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-
-    if (!$response) {
-      $error = 'Failed to connect to DeepSeek API. Check your internet connection.';
-    } else {
-      $data = json_decode($response, true);
-      if ($httpCode !== 200) {
-        $error = $data['error']['message'] ?? "API error (HTTP {$httpCode})";
-      } else {
-        $raw = $data['choices'][0]['message']['content'] ?? '';
-        $clean = trim(preg_replace('/```json|```/', '', $raw));
-        $result = json_decode($clean, true);
-        if (!$result) {
-          $error = 'Could not parse AI response. Try again.';
-        }
-      }
-    }
-  }
-}
-?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Macro Analyzer</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Food101 CLIP Tester</title>
   <style>
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    :root {
-      --bg: #0e0e0f;
-      --surface: #161618;
-      --surface2: #1e1e21;
-      --border: rgba(255, 255, 255, 0.08);
-      --border2: rgba(255, 255, 255, 0.14);
-      --text: #f0efe8;
-      --muted: #888784;
-      --accent: #c8f064;
-      --accent-dim: rgba(200, 240, 100, 0.12);
-      --protein: #378ADD;
-      --carbs: #EF9F27;
-      --fats: #D85A30;
-      --other: #888784;
-      --danger: #f07070;
-      --radius: 12px;
-      --radius-sm: 8px;
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 15px;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      padding: 3rem 1rem 4rem;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 520px;
-    }
-
-    .header {
-      margin-bottom: 2.5rem;
-    }
-
-    .logo {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      color: var(--accent);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      margin-bottom: 12px;
-    }
-
-    h1 {
-      font-size: 32px;
-      font-weight: 300;
-      letter-spacing: -0.02em;
-      line-height: 1.15;
-    }
-
-    h1 span {
-      font-weight: 500;
-    }
-
-    .tagline {
-      font-size: 13px;
-      color: var(--muted);
-      margin-top: 8px;
-    }
-
-    .card {
-      background: var(--surface);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.25rem;
-      margin-bottom: 1rem;
-    }
-
-    .field-label {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      color: var(--muted);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-bottom: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .toggle-key {
-      background: none;
-      border: none;
-      color: var(--accent);
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      cursor: pointer;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
-
-    input[type="text"],
-    input[type="password"] {
-      width: 100%;
-      background: var(--surface2);
-      border: 0.5px solid var(--border2);
-      border-radius: var(--radius-sm);
-      color: var(--text);
-      font-family: 'DM Mono', monospace;
-      font-size: 13px;
-      padding: 10px 12px;
-      outline: none;
-      transition: border-color 0.15s;
-    }
-
-    input:focus {
-      border-color: var(--accent);
-    }
-
-    textarea {
-      width: 100%;
-      background: var(--surface2);
-      border: 0.5px solid var(--border2);
-      border-radius: var(--radius-sm);
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      padding: 10px 12px;
-      outline: none;
-      transition: border-color 0.15s;
-      resize: vertical;
-      min-height: 100px;
-      line-height: 1.6;
-    }
-
-    textarea:focus {
-      border-color: var(--accent);
-    }
-
-    textarea::placeholder {
-      color: var(--muted);
-    }
-
-    .submit-btn {
-      width: 100%;
-      background: var(--accent);
-      color: #0e0e0f;
-      border: none;
-      border-radius: var(--radius-sm);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 15px;
-      font-weight: 500;
-      padding: 12px;
-      cursor: pointer;
-      margin-top: 0.5rem;
-      transition: opacity 0.15s, transform 0.1s;
-      letter-spacing: 0.01em;
-    }
-
-    .submit-btn:hover {
-      opacity: 0.88;
-    }
-
-    .submit-btn:active {
-      transform: scale(0.99);
-    }
-
-    .error-box {
-      background: rgba(240, 112, 112, 0.1);
-      border: 0.5px solid rgba(240, 112, 112, 0.3);
-      border-radius: var(--radius-sm);
-      color: var(--danger);
-      font-size: 13px;
-      padding: 10px 14px;
-      margin-top: 0.75rem;
-    }
-
-    .results-card {
-      background: var(--surface);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      margin-top: 1.5rem;
-    }
-
-    .result-header {
-      padding: 1.25rem;
-      border-bottom: 0.5px solid var(--border);
-    }
-
-    .food-name {
-      font-size: 20px;
-      font-weight: 500;
-      margin-bottom: 4px;
-    }
-
-    .food-desc {
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.5;
-    }
-
-    .macro-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0;
-    }
-
-    .macro-cell {
-      padding: 1.1rem 1.25rem;
-      border-right: 0.5px solid var(--border);
-      border-bottom: 0.5px solid var(--border);
-    }
-
-    .macro-cell:nth-child(2n) {
-      border-right: none;
-    }
-
-    .macro-cell:nth-child(3),
-    .macro-cell:nth-child(4) {
-      border-bottom: none;
-    }
-
-    .macro-tag {
-      font-family: 'DM Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      margin-bottom: 6px;
-    }
-
-    .macro-tag.protein { color: var(--protein); }
-    .macro-tag.carbs   { color: var(--carbs); }
-    .macro-tag.fats    { color: var(--fats); }
-    .macro-tag.other   { color: var(--other); }
-
-    .macro-num {
-      font-size: 30px;
-      font-weight: 300;
-      letter-spacing: -0.02em;
-    }
-
-    .macro-num span {
-      font-size: 14px;
-      color: var(--muted);
-      font-weight: 400;
-    }
-
-    .macro-bar-wrap {
-      height: 3px;
-      background: var(--surface2);
-      border-radius: 2px;
-      margin-top: 10px;
-      overflow: hidden;
-    }
-
-    .macro-bar-fill {
-      height: 100%;
-      border-radius: 2px;
-    }
-
-    .calories-row {
-      padding: 1rem 1.25rem;
-      border-top: 0.5px solid var(--border);
-      display: flex;
-      align-items: baseline;
-      gap: 10px;
-    }
-
-    .cal-label {
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .cal-num {
-      font-size: 26px;
-      font-weight: 300;
-      color: var(--accent);
-    }
-
-    .cal-unit {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .notes-row {
-      padding: 1rem 1.25rem;
-      border-top: 0.5px solid var(--border);
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.6;
-    }
-
-    .footer {
-      text-align: center;
-      margin-top: 2.5rem;
-      font-family: 'DM Mono', monospace;
-      font-size: 11px;
-      color: var(--muted);
-      letter-spacing: 0.06em;
-    }
+    :root { --accent:#AAFF00; --accent-dim:#1C2210; --bg:#111; --surface:#1a1a1a; --border:#2a2a2a; --muted:#555; --text:#fff; }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;display:flex;justify-content:center;padding:40px 20px;}
+    .container{width:100%;max-width:500px;}
+    h1{font-size:22px;font-weight:800;margin-bottom:6px;}
+    h1 span{color:var(--accent);}
+    .subtitle{font-size:13px;color:var(--muted);margin-bottom:24px;}
+    .model-info{background:var(--surface);border-radius:12px;padding:12px 14px;font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.7;}
+    .model-info a{color:var(--accent);text-decoration:none;}
+    .model-info span{color:var(--accent);}
+    .upload-area{background:var(--surface);border:2px dashed var(--border);border-radius:16px;height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;cursor:pointer;margin-bottom:16px;overflow:hidden;transition:border-color .2s;}
+    .upload-area:hover{border-color:var(--accent);}
+    .upload-area img{width:100%;height:100%;object-fit:cover;}
+    .upload-area span{font-size:12px;color:#444;}
+    input[type="file"]{display:none;}
+    .row{display:flex;gap:10px;margin-bottom:12px;}
+    .input-field{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:13px 14px;color:var(--text);font-size:13px;outline:none;}
+    .input-field:focus{border-color:var(--accent);}
+    .input-field::placeholder{color:#444;}
+    .note{font-size:11px;color:#444;margin-top:-8px;margin-bottom:14px;line-height:1.5;}
+    .btn{width:100%;background:var(--accent);color:#111;font-size:15px;font-weight:800;border:none;border-radius:14px;padding:16px;cursor:pointer;margin-bottom:20px;}
+    .btn:disabled{background:var(--border);color:var(--muted);cursor:not-allowed;}
+    .loading{display:none;text-align:center;color:var(--muted);font-size:13px;margin-bottom:16px;}
+    .loading.show{display:block;}
+    .result{display:none;background:var(--surface);border-radius:16px;overflow:hidden;margin-bottom:20px;}
+    .result.show{display:block;}
+    .result-header{background:var(--accent-dim);padding:14px 16px;font-size:11px;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase;}
+    .result-item{display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid #222;gap:10px;}
+    .result-item:last-child{border-bottom:none;}
+    .result-label{font-size:14px;color:var(--text);font-weight:600;min-width:140px;}
+    .bar-wrap{flex:1;background:#222;border-radius:4px;height:6px;overflow:hidden;}
+    .bar-fill{height:100%;background:var(--accent);border-radius:4px;}
+    .result-score{font-size:13px;color:var(--accent);font-weight:700;min-width:36px;text-align:right;}
+    .error{display:none;background:#2a1a1a;border:1px solid #5a2a2a;border-radius:12px;padding:14px;color:#ff6b6b;font-size:13px;margin-bottom:16px;line-height:1.5;}
+    .error.show{display:block;}
   </style>
 </head>
-
 <body>
-  <div class="container">
-    <div class="header">
-      <div class="logo">&#9632; DeepSeek</div>
-      <h1>Macro <span>Analyzer</span></h1>
-      <p class="tagline">Describe your meal. Get protein, carbs, fats & calories.</p>
-    </div>
+<div class="container">
+  <h1>Food<span>101</span> Classifier</h1>
+  <p class="subtitle">Free food image recognition via Imagga API</p>
 
-    <form method="POST" id="mainForm">
-      <div class="card">
-        <div class="field-label">
-          DeepSeek API Key
-          <button type="button" class="toggle-key" id="toggleKey">show</button>
-        </div>
-        <input type="password" name="api_key" id="apiKey"
-          placeholder="sk-..."
-          value="<?= htmlspecialchars($_POST['api_key'] ?? '') ?>"
-          required />
-      </div>
-
-      <div class="card">
-        <div class="field-label">Describe Your Food</div>
-        <textarea
-          name="food_description"
-          placeholder="e.g. 1 cup white rice, 2 fried eggs cooked in 1 tbsp butter, side of steamed broccoli..."
-          required
-        ><?= htmlspecialchars($_POST['food_description'] ?? '') ?></textarea>
-      </div>
-
-      <button type="submit" class="submit-btn">Analyze Macros</button>
-    </form>
-
-    <?php if ($error): ?>
-      <div class="error-box"><?= htmlspecialchars($error) ?></div>
-    <?php endif; ?>
-
-    <?php if ($result): ?>
-      <?php
-      $p = round($result['protein_g'] ?? 0);
-      $c = round($result['carbs_g'] ?? 0);
-      $f = round($result['fats_g'] ?? 0);
-      $o = round($result['other_g'] ?? 0);
-      $total = max($p + $c + $f + $o, 1);
-      ?>
-      <div class="results-card">
-        <div class="result-header">
-          <div class="food-name"><?= htmlspecialchars($result['food_name'] ?? 'Unknown food') ?></div>
-          <div class="food-desc"><?= htmlspecialchars($result['description'] ?? '') ?></div>
-        </div>
-        <div class="macro-grid">
-          <div class="macro-cell">
-            <div class="macro-tag protein">Protein</div>
-            <div class="macro-num"><?= $p ?><span> g</span></div>
-            <div class="macro-bar-wrap">
-              <div class="macro-bar-fill" style="width:<?= round($p / $total * 100) ?>%; background:var(--protein);"></div>
-            </div>
-          </div>
-          <div class="macro-cell">
-            <div class="macro-tag carbs">Carbs</div>
-            <div class="macro-num"><?= $c ?><span> g</span></div>
-            <div class="macro-bar-wrap">
-              <div class="macro-bar-fill" style="width:<?= round($c / $total * 100) ?>%; background:var(--carbs);"></div>
-            </div>
-          </div>
-          <div class="macro-cell">
-            <div class="macro-tag fats">Fats</div>
-            <div class="macro-num"><?= $f ?><span> g</span></div>
-            <div class="macro-bar-wrap">
-              <div class="macro-bar-fill" style="width:<?= round($f / $total * 100) ?>%; background:var(--fats);"></div>
-            </div>
-          </div>
-          <div class="macro-cell">
-            <div class="macro-tag other">Other</div>
-            <div class="macro-num"><?= $o ?><span> g</span></div>
-            <div class="macro-bar-wrap">
-              <div class="macro-bar-fill" style="width:<?= round($o / $total * 100) ?>%; background:var(--other);"></div>
-            </div>
-          </div>
-        </div>
-        <div class="calories-row">
-          <span class="cal-label">Est. Calories</span>
-          <span class="cal-num"><?= round($result['calories_kcal'] ?? 0) ?></span>
-          <span class="cal-unit">kcal</span>
-        </div>
-        <?php if (!empty($result['notes'])): ?>
-          <div class="notes-row"><?= htmlspecialchars($result['notes']) ?></div>
-        <?php endif; ?>
-      </div>
-    <?php endif; ?>
-
-    <div class="footer">macro-analyzer &middot; powered by deepseek</div>
+  <div class="model-info">
+    Uses <span>Imagga</span> image tagging — free tier, no credit card needed.<br>
+    Sign up at <a href="https://imagga.com" target="_blank">imagga.com</a> → Dashboard → grab your <span>API Key</span> + <span>API Secret</span>.
   </div>
 
-  <script>
-    const toggleKey = document.getElementById('toggleKey');
-    const apiKey = document.getElementById('apiKey');
+  <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.5">
+      <rect x="3" y="3" width="18" height="18" rx="3"/>
+      <circle cx="8.5" cy="8.5" r="1.5"/>
+      <path d="M21 15l-5-5L5 21"/>
+    </svg>
+    <span>Tap to upload food photo</span>
+  </div>
+  <input type="file" id="fileInput" accept="image/*" onchange="previewImage(event)">
 
-    toggleKey.addEventListener('click', () => {
-      const show = apiKey.type === 'password';
-      apiKey.type = show ? 'text' : 'password';
-      toggleKey.textContent = show ? 'hide' : 'show';
+  <div class="row">
+    <input type="text" class="input-field" id="apiKey" placeholder="Imagga API Key">
+    <input type="text" class="input-field" id="apiSecret" placeholder="Imagga API Secret">
+  </div>
+  <p class="note">Find both in your Imagga dashboard after signing up (free, no card). Never stored.</p>
+
+  <button class="btn" id="analyzeBtn" onclick="analyze()" disabled>Analyze Food</button>
+
+  <div class="loading" id="loading">⏳ Sending to Imagga...</div>
+  <div class="error" id="errorBox"></div>
+
+  <div class="result" id="result">
+    <div class="result-header">Top Tags</div>
+    <div id="resultItems"></div>
+  </div>
+</div>
+
+<script>
+  var imageFile = null;
+
+  function previewImage(event) {
+    var file = event.target.files[0];
+    if (!file) return;
+    imageFile = file;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById("uploadArea").innerHTML = '<img src="' + e.target.result + '">';
+      document.getElementById("analyzeBtn").disabled = false;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // Resize image to max 800px on longest side, JPEG quality 0.85
+  function resizeImage(file, maxPx, quality) {
+    return new Promise(function(resolve) {
+      var img = new Image();
+      var url = URL.createObjectURL(file);
+      img.onload = function() {
+        var w = img.width, h = img.height;
+        if (w > maxPx || h > maxPx) {
+          if (w > h) { h = Math.round(h * maxPx / w); w = maxPx; }
+          else       { w = Math.round(w * maxPx / h); h = maxPx; }
+        }
+        var canvas = document.createElement("canvas");
+        canvas.width = w; canvas.height = h;
+        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+        URL.revokeObjectURL(url);
+        canvas.toBlob(resolve, "image/jpeg", quality);
+      };
+      img.src = url;
     });
-  </script>
-</body>
+  }
 
+  async function analyze() {
+    var key    = document.getElementById("apiKey").value.trim();
+    var secret = document.getElementById("apiSecret").value.trim();
+    if (!key || !secret) { showError("Please enter both your Imagga API Key and API Secret."); return; }
+    if (!imageFile)      { showError("Please upload a food image."); return; }
+
+    document.getElementById("loading").classList.add("show");
+    document.getElementById("result").classList.remove("show");
+    document.getElementById("errorBox").classList.remove("show");
+    document.getElementById("analyzeBtn").disabled = true;
+
+    try {
+      // Compress before sending — fixes the timeout
+      var blob = await resizeImage(imageFile, 800, 0.85);
+
+      var formData = new FormData();
+      formData.append("image", blob, "food.jpg");
+
+      var credentials = btoa(key + ":" + secret);
+
+      var response = await fetch("https://api.imagga.com/v2/tags", {
+        method: "POST",
+        headers: { "Authorization": "Basic " + credentials },
+        body: formData
+      });
+
+      var data = await response.json();
+
+      if (!response.ok || (data.status && data.status.type === "error")) {
+        var msg = (data.status && data.status.text) || (data.error && data.error.message) || ("API error " + response.status);
+        throw new Error(msg);
+      }
+
+      var tags = data.result && data.result.tags;
+      if (!tags || tags.length === 0) throw new Error("No tags returned for this image.");
+
+      var topScore = tags[0].confidence;
+      var html = "";
+      tags.slice(0, 7).forEach(function(tag) {
+        var pct   = Math.round(tag.confidence);
+        var width = Math.round((tag.confidence / topScore) * 100);
+        var label = (tag.tag.en || tag.tag);
+        label = label.charAt(0).toUpperCase() + label.slice(1);
+        html += '<div class="result-item">' +
+          '<div class="result-label">' + label + '</div>' +
+          '<div class="bar-wrap"><div class="bar-fill" style="width:' + width + '%"></div></div>' +
+          '<div class="result-score">' + pct + '%</div>' +
+        '</div>';
+      });
+
+      document.getElementById("resultItems").innerHTML = html;
+      document.getElementById("result").classList.add("show");
+
+    } catch(e) {
+      showError("Error: " + e.message);
+    } finally {
+      document.getElementById("loading").classList.remove("show");
+      document.getElementById("analyzeBtn").disabled = false;
+    }
+  }
+
+  function showError(msg) {
+    var box = document.getElementById("errorBox");
+    box.innerText = msg;
+    box.classList.add("show");
+    document.getElementById("loading").classList.remove("show");
+    document.getElementById("analyzeBtn").disabled = false;
+  }
+</script>
+</body>
 </html>
